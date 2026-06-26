@@ -74,7 +74,7 @@
             border-color: #475569;
         }
 
-        .news-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .news-card { transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
         .news-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(14, 165, 233, 0.2); }
 
         @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -177,6 +177,14 @@
                 <p class="text-lg text-gray-600 dark:text-gray-300 font-semibold">Вся правда о Мурманске, которую от вас скрывают пастухи.</p>
             </div>
             <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"></div>
+        </section>
+
+        <!-- Читалка Новин (Повний екран новини) -->
+        <section id="view-article" class="hidden-view">
+            <button onclick="switchView('news')" class="mb-4 text-murmansk font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> Назад к новостям</button>
+            <div class="glass-panel rounded-3xl overflow-hidden shadow-xl" id="article-content">
+                <!-- Контент рендериться через JS -->
+            </div>
         </section>
 
         <!-- Вкладка: Кликер -->
@@ -498,8 +506,8 @@
         }
 
         function switchView(viewId) {
-            ['news', 'clicker', 'shop', 'leaderboard', 'translator', 'chat', 'profile'].forEach(id => {
-                document.getElementById('view-' + id).classList.add('hidden-view');
+            ['news', 'article', 'clicker', 'shop', 'leaderboard', 'translator', 'chat', 'profile'].forEach(id => {
+                document.getElementById('view-' + id)?.classList.add('hidden-view');
                 document.getElementById('btn-' + id)?.classList.remove('active');
             });
             
@@ -997,8 +1005,9 @@
                     if (state.user.is_admin && supportReplyTarget) {
                         msgObj.recipient_email = supportReplyTarget;
                         supportReplyTarget = null; // сброс после ответа
-                        input.placeholder = "Написать в поддержку...";
+                        input.placeholder = "Муу-кните что-нибудь...";
                     } else if (!state.user.is_admin) {
+                        // Обычный юзер пишет в саппорт (получатель не важен, админ увидит все is_support)
                         msgObj.recipient_email = 'admin';
                     }
                 }
@@ -1027,7 +1036,7 @@
             container.innerHTML = '';
             
             const newsToShow = state.news.length > 0 ? state.news : [
-                { title: "Загрузка новостей...", text: "Подключаемся к стойлу данных...", img: "https://placehold.co/400x200/0ea5e9/ffffff?text=Moo" }
+                { id: 'mock', title: "Загрузка новостей...", text: "Подключаемся к стойлу данных...", img: "https://placehold.co/400x200/0ea5e9/ffffff?text=Moo" }
             ];
 
             newsToShow.forEach(item => {
@@ -1036,18 +1045,48 @@
                 card.className = 'glass-panel rounded-2xl overflow-hidden news-card flex flex-col h-full';
                 const imgSrc = item.img || "https://placehold.co/400x200/0ea5e9/ffffff?text=News";
                 
+                // Добавлено событие клика на карточку
+                card.onclick = () => openArticle(item);
+
                 card.innerHTML = `
                     <div class="h-48 bg-cover bg-center border-b dark:border-gray-700" style="background-image: url('${imgSrc}')"></div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
                             <h3 class="text-xl font-black mb-2 dark:text-white">${escapeHtml(item.title)}</h3>
-                            <p class="text-gray-600 dark:text-gray-300 font-medium leading-relaxed">${escapeHtml(item.text)}</p>
+                            <p class="text-gray-600 dark:text-gray-300 font-medium leading-relaxed line-clamp-3">${escapeHtml(item.text)}</p>
                         </div>
-                        <div class="text-xs text-gray-400 mt-3 font-bold">${dateStr}</div>
+                        <div class="text-xs text-gray-400 mt-3 font-bold flex justify-between items-center">
+                            <span>${dateStr}</span>
+                            <span class="text-murmansk">Читать далее <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function openArticle(item) {
+            switchView('article');
+            const container = document.getElementById('article-content');
+            const imgSrc = item.img || "https://placehold.co/800x400/0ea5e9/ffffff?text=News";
+            const dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('ru-RU') : '';
+
+            container.innerHTML = `
+                <div class="h-64 md:h-96 w-full bg-cover bg-center border-b dark:border-gray-700" style="background-image: url('${imgSrc}')"></div>
+                <div class="p-6 md:p-10">
+                    <div class="text-sm text-gray-500 mb-2 font-bold">${dateStr} • Муу-рманск</div>
+                    <h1 class="text-3xl md:text-5xl font-black mb-6 dark:text-white">${escapeHtml(item.title)}</h1>
+                    <div class="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                        ${escapeHtml(item.text).replace(/\n/g, '<br>')}
+                    </div>
+                    <div class="mt-10 pt-6 border-t dark:border-gray-700 flex gap-4">
+                         <a href="https://t.me/NovostiMyyyrmanska" target="_blank" class="bg-murmansk text-white font-bold py-2 px-6 rounded-full hover:bg-sky-600 transition">
+                            <i class="fa-brands fa-telegram mr-2"></i> Обсудить в Telegram
+                        </a>
+                    </div>
+                </div>
+            `;
+            window.scrollTo(0, 0);
         }
 
         async function handlePostNews(e) {
