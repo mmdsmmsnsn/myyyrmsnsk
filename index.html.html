@@ -214,6 +214,18 @@
         .toast-enter { animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         #news-modal-overlay { backdrop-filter: blur(5px); }
+
+        .translator-shell { animation: translatorPulse 1.6s ease-in-out infinite alternate; }
+        .translator-output-animate { animation: textPop 0.45s ease both; }
+        @keyframes translatorPulse { from { box-shadow: 0 0 0 0 rgba(14,165,233,0.16); } to { box-shadow: 0 0 0 10px rgba(14,165,233,0.04); } }
+        @keyframes textPop { 0% { transform: scale(0.97); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+        .achievement-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .achievement-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(14,165,233,0.12); }
+        .daily-reward-card { background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(251,191,36,0.2)); }
+        .progress-track { background: rgba(148,163,184,0.2); }
+        .progress-fill { transition: width 0.5s ease; }
+        .cosmetic-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .cosmetic-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(15,23,42,0.12); }
     </style>
 </head>
 <body class="relative transition-colors duration-300">
@@ -534,15 +546,33 @@
 
         <!-- ПЕРЕКЛАДАЧ -->
         <section id="view-translator" class="hidden-view">
-            <div class="glass-panel rounded-3xl p-6 md:p-10 max-w-2xl mx-auto shadow-xl">
-                <h2 class="text-3xl font-black text-center text-gray-800 dark:text-white mb-2">Муу-Переводчик 3.0</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                    <textarea id="human-text" rows="4" class="w-full border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl p-3 focus:border-murmansk font-medium resize-none" placeholder="Напиши: Привет, как дела? Я иду домой."></textarea>
-                    <div id="cow-text" class="w-full h-full min-h-[100px] bg-sky-50 dark:bg-sky-900 border-2 border-sky-100 dark:border-sky-800 rounded-xl p-4 font-black text-sky-800 dark:text-sky-100 flex items-center justify-center text-center text-lg shadow-inner break-words">МУУ...</div>
+            <div class="glass-panel rounded-3xl p-6 md:p-10 max-w-3xl mx-auto shadow-xl">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 rounded-full bg-sky-100 dark:bg-sky-900/60 px-3 py-1 text-xs font-black uppercase tracking-[0.24em] text-sky-700 dark:text-sky-300 mb-3">
+                            <i class="fa-solid fa-hat-cow"></i> Muu Translation Studio
+                        </div>
+                        <h2 class="text-3xl font-black text-gray-800 dark:text-white">Муу-Переводчик 4.0</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 font-semibold mt-2">Кожне слово отримує власний «Мууу» префікс, зберігаючи пробіли й пунктуацію.</p>
+                    </div>
+                    <div id="translator-badge" class="translator-shell rounded-full bg-gradient-to-r from-sky-500 to-amber-400 px-4 py-2 text-sm font-black text-white shadow-lg">⚡ Живий переклад</div>
                 </div>
-                <div class="text-center mt-6">
-                    <button onclick="translateToMoo()" class="bg-murmansk text-white font-bold text-lg py-3 px-10 rounded-full hover:bg-sky-600 shadow-xl transition transform hover:scale-105"><i class="fa-solid fa-language mr-2"></i> Перевести</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2">
+                    <div>
+                        <label class="block text-sm font-black text-gray-700 dark:text-gray-300 mb-2">Вхідний текст</label>
+                        <textarea id="human-text" rows="8" class="w-full border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-2xl p-4 focus:border-murmansk font-medium resize-none shadow-inner" placeholder="Напиши: Привіт як справи? Я йду додому."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-gray-700 dark:text-gray-300 mb-2">Результат</label>
+                        <div id="cow-text" class="w-full h-full min-h-[220px] bg-sky-50 dark:bg-sky-900 border-2 border-sky-100 dark:border-sky-800 rounded-2xl p-4 font-black text-sky-800 dark:text-sky-100 flex items-center justify-center text-center text-lg shadow-inner break-words leading-relaxed">Мууу...</div>
+                    </div>
                 </div>
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <button onclick="translateToMoo()" class="bg-murmansk text-white font-black text-lg py-3 px-8 rounded-full hover:bg-sky-600 shadow-xl transition transform hover:scale-105"><i class="fa-solid fa-language mr-2"></i> Перевести</button>
+                    <button onclick="copyTranslatedText()" class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 font-black py-3 px-6 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-copy mr-2"></i> Копіювати</button>
+                    <button onclick="clearTranslator()" class="bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200 font-black py-3 px-6 rounded-full hover:bg-amber-200 dark:hover:bg-amber-800/70 transition"><i class="fa-solid fa-broom mr-2"></i> Очистити</button>
+                </div>
+                <div id="translator-status" class="mt-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Готовий до перекладу.</div>
             </div>
         </section>
 
@@ -591,6 +621,48 @@
                         <span id="profile-role" class="inline-block mt-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider shadow-sm">Рядовая Корова</span>
                     </div>
 
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                        <div class="daily-reward-card rounded-2xl p-4 border border-sky-100 dark:border-sky-900 shadow-sm">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="font-black text-gray-800 dark:text-white"><i class="fa-solid fa-gift text-sky-500 mr-2"></i> Щоденні нагороди</div>
+                                <div id="daily-streak-badge" class="text-xs font-black text-sky-700 dark:text-sky-300">Серія 0</div>
+                            </div>
+                            <div id="daily-reward-text" class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3">Очікуйте нагороду за наступний вхід.</div>
+                            <div class="flex items-center justify-between text-sm font-bold">
+                                <span id="daily-timer">00:00:00</span>
+                                <button onclick="claimDailyReward()" id="daily-claim-btn" class="bg-murmansk text-white px-4 py-2 rounded-full hover:bg-sky-600 transition">Отримати</button>
+                            </div>
+                        </div>
+                        <div class="rounded-2xl p-4 border border-amber-100 dark:border-amber-900/50 bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/30 shadow-sm">
+                            <div class="font-black text-gray-800 dark:text-white mb-3"><i class="fa-solid fa-star text-amber-500 mr-2"></i> XP і рівень</div>
+                            <div class="flex items-center justify-between text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
+                                <span>Рівень <span id="level-badge">1</span></span>
+                                <span id="xp-text">0 / 1000 XP</span>
+                            </div>
+                            <div class="progress-track h-3 rounded-full overflow-hidden">
+                                <div id="xp-progress" class="progress-fill h-full rounded-full bg-gradient-to-r from-sky-500 to-amber-400" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 mb-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-black text-gray-800 dark:text-white"><i class="fa-solid fa-trophy text-amber-500 mr-2"></i> Досягнення</h3>
+                            <div id="achievements-count" class="text-xs font-black text-sky-600 dark:text-sky-300">0 / 0</div>
+                        </div>
+                        <div id="achievements-list" class="space-y-3"></div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 mb-6 shadow-sm">
+                        <h3 class="font-black text-gray-800 dark:text-white mb-4"><i class="fa-solid fa-chart-line text-sky-500 mr-2"></i> Статистика профілю</h3>
+                        <div id="profile-stats-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 mb-6 shadow-sm">
+                        <h3 class="font-black text-gray-800 dark:text-white mb-4"><i class="fa-solid fa-sparkles text-purple-500 mr-2"></i> Магазин оформлення профілю</h3>
+                        <div id="cosmetics-shop" class="space-y-4"></div>
+                    </div>
+
                     <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 mb-6 shadow-sm">
                         <h3 class="font-black text-gray-800 dark:text-white mb-3 border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-sliders text-murmansk mr-2"></i> Настройки</h3>
                         <div class="space-y-3 text-sm">
@@ -625,10 +697,18 @@
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         const state = {
-            user: null, 
+            user: null,
             clicker: { coins: 0, energy: 1000, maxEnergy: 1000, lastSyncCoins: 0, lastSyncEnergy: 1000 },
-            multiplier: 1, autoClicker: false, completedTasks: [], chatMode: 'global', news: [], theme: 'light',
-            equippedSkin: 'default', purchasedSkins: ['default']
+            multiplier: 1,
+            autoClicker: false,
+            completedTasks: [],
+            chatMode: 'global',
+            news: [],
+            theme: 'light',
+            equippedSkin: 'default',
+            purchasedSkins: ['default'],
+            progress: { xp: 0, level: 1, clicks: 0, referrals: 0, loginCount: 0, tasksCompleted: 0, achievementsUnlocked: [], dailyStreak: 0, lastDailyClaim: null, registeredAt: null, lastLoginAt: null },
+            cosmetics: { owned: [], equipped: { frame: 'none', nickColor: 'default', avatar: 'cow', background: 'default', badge: 'none', animatedFrame: 'none', effect: 'none', profileColor: 'default' } }
         };
 
         const SKINS_DB = {
@@ -638,6 +718,320 @@
             'rich':    { name: 'Богачка', icon: 'fa-solid fa-sack-dollar', price: 500000, color: 'text-green-400' },
             'alien':   { name: 'Пришелец', icon: 'fa-brands fa-reddit-alien', price: 1000000, color: 'text-purple-500' }
         };
+
+        const ACHIEVEMENTS_DB = [
+            { id: 'first_registration', title: 'Перша реєстрація', description: 'Створив акаунт у стаді', icon: 'fa-solid fa-seedling', reward: 10000 },
+            { id: 'first_login', title: 'Перший вхід', description: 'Успішно зайшов у профіль', icon: 'fa-solid fa-door-open', reward: 5000 },
+            { id: 'first_1000_coins', title: 'Перші 1000 монет', description: 'Набрав першу тисячу монет', icon: 'fa-solid fa-coins', reward: 8000 },
+            { id: 'first_10000_coins', title: 'Перші 10000 монет', description: 'Досягнув знакової суми', icon: 'fa-solid fa-sack-dollar', reward: 15000 },
+            { id: 'first_referral', title: 'Перший реферал', description: 'Запросив нового гравця', icon: 'fa-solid fa-user-plus', reward: 12000 },
+            { id: 'five_referrals', title: '5 рефералів', description: 'Завів цілу братію', icon: 'fa-solid fa-users', reward: 20000 },
+            { id: 'ten_referrals', title: '10 рефералів', description: 'Став справжнім пастухом', icon: 'fa-solid fa-crown', reward: 30000 },
+            { id: 'all_tasks_done', title: 'Виконав усі завдання', description: 'Пройшов усі доступні квести', icon: 'fa-solid fa-list-check', reward: 18000 },
+            { id: 'level_5', title: 'Рівень 5', description: 'Досягнув нового рівня', icon: 'fa-solid fa-star', reward: 12000 },
+            { id: 'all_skins', title: 'Отримав усі скіни', description: 'Надів кожен доступний образ', icon: 'fa-solid fa-palette', reward: 25000 }
+        ];
+
+        const COSMETICS_DB = [
+            { id: 'frame_gold', name: 'Золота рамка', category: 'frame', icon: '✨', price: 15000, color: 'border-yellow-400' },
+            { id: 'frame_cyber', name: 'Кіберрамка', category: 'frame', icon: '⚡', price: 22000, color: 'border-sky-500' },
+            { id: 'nick_blue', name: 'Синій нік', category: 'nickColor', icon: '💙', price: 10000, color: 'text-sky-500' },
+            { id: 'nick_gold', name: 'Золотий нік', category: 'nickColor', icon: '🟡', price: 14000, color: 'text-amber-500' },
+            { id: 'avatar_cow', name: 'Аватар корови', category: 'avatar', icon: '🐄', price: 8000, color: 'bg-sky-100' },
+            { id: 'avatar_star', name: 'Зіркова аватарка', category: 'avatar', icon: '🌟', price: 12000, color: 'bg-amber-100' },
+            { id: 'bg_sky', name: 'Сяючий фон', category: 'background', icon: '🌈', price: 18000, color: 'from-sky-400 to-cyan-300' },
+            { id: 'badge_legend', name: 'Легендарний бейдж', category: 'badge', icon: '🏅', price: 20000, color: 'bg-amber-500' }
+        ];
+
+        function loadProgressState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('murmansk_progress_state') || '{}');
+                state.progress = {
+                    xp: Number(saved.xp || 0),
+                    level: Number(saved.level || 1),
+                    clicks: Number(saved.clicks || 0),
+                    referrals: Number(saved.referrals || 0),
+                    loginCount: Number(saved.loginCount || 0),
+                    tasksCompleted: Number(saved.tasksCompleted || 0),
+                    achievementsUnlocked: Array.isArray(saved.achievementsUnlocked) ? saved.achievementsUnlocked : [],
+                    dailyStreak: Number(saved.dailyStreak || 0),
+                    lastDailyClaim: saved.lastDailyClaim || null,
+                    registeredAt: saved.registeredAt || null,
+                    lastLoginAt: saved.lastLoginAt || null
+                };
+            } catch (e) {
+                state.progress = { xp: 0, level: 1, clicks: 0, referrals: 0, loginCount: 0, tasksCompleted: 0, achievementsUnlocked: [], dailyStreak: 0, lastDailyClaim: null, registeredAt: null, lastLoginAt: null };
+            }
+            try {
+                const savedCosmetics = JSON.parse(localStorage.getItem('murmansk_cosmetics_state') || '{}');
+                state.cosmetics = {
+                    owned: Array.isArray(savedCosmetics.owned) ? savedCosmetics.owned : [],
+                    equipped: {
+                        frame: savedCosmetics.equipped?.frame || 'none',
+                        nickColor: savedCosmetics.equipped?.nickColor || 'default',
+                        avatar: savedCosmetics.equipped?.avatar || 'cow',
+                        background: savedCosmetics.equipped?.background || 'default',
+                        badge: savedCosmetics.equipped?.badge || 'none',
+                        animatedFrame: savedCosmetics.equipped?.animatedFrame || 'none',
+                        effect: savedCosmetics.equipped?.effect || 'none',
+                        profileColor: savedCosmetics.equipped?.profileColor || 'default'
+                    }
+                };
+            } catch (e) {
+                state.cosmetics = { owned: [], equipped: { frame: 'none', nickColor: 'default', avatar: 'cow', background: 'default', badge: 'none', animatedFrame: 'none', effect: 'none', profileColor: 'default' } };
+            }
+        }
+
+        function persistProgressState() {
+            localStorage.setItem('murmansk_progress_state', JSON.stringify(state.progress));
+            localStorage.setItem('murmansk_cosmetics_state', JSON.stringify(state.cosmetics));
+        }
+
+        function awardXp(amount, source = 'general') {
+            if (!state.progress) return;
+            state.progress.xp += amount;
+            const nextLevelXp = state.progress.level * 1000;
+            if (state.progress.xp >= nextLevelXp) {
+                state.progress.level += 1;
+                state.clicker.coins += 2000;
+                showToast(`⬆️ Рівень ${state.progress.level}! +2000 🪙`, 'success');
+                unlockAchievement(`level_${state.progress.level}`);
+            }
+            state.progress.tasksCompleted = state.completedTasks.length;
+            persistProgressState();
+            updateLevelUI();
+            updateAchievementsUI();
+            if (source === 'click' && state.progress.clicks > 0) {
+                updateProfileStats();
+            }
+        }
+
+        function unlockAchievement(id) {
+            if (!state.progress || state.progress.achievementsUnlocked.includes(id)) return false;
+            const achievement = ACHIEVEMENTS_DB.find(item => item.id === id);
+            if (!achievement) return false;
+            state.progress.achievementsUnlocked.push(id);
+            state.clicker.coins += achievement.reward;
+            persistProgressState();
+            updateAchievementsUI();
+            updateClickerUI();
+            showToast(`🏅 ${achievement.title} +${achievement.reward.toLocaleString('ru-RU')} 🪙`, 'success');
+            return true;
+        }
+
+        function updateAchievementsUI() {
+            const list = document.getElementById('achievements-list');
+            const count = document.getElementById('achievements-count');
+            if (!list) return;
+            const unlocked = state.progress?.achievementsUnlocked || [];
+            const completed = ACHIEVEMENTS_DB.map(achievement => {
+                let progress = 0;
+                const isUnlocked = unlocked.includes(achievement.id);
+                if (isUnlocked) progress = 100;
+                else if (achievement.id === 'first_registration') progress = 0;
+                else if (achievement.id === 'first_login') progress = 0;
+                else if (achievement.id === 'first_1000_coins') progress = Math.min(100, (state.clicker.coins / 1000) * 100);
+                else if (achievement.id === 'first_10000_coins') progress = Math.min(100, (state.clicker.coins / 10000) * 100);
+                else if (achievement.id === 'first_referral') progress = Math.min(100, (state.progress.referrals / 1) * 100);
+                else if (achievement.id === 'five_referrals') progress = Math.min(100, (state.progress.referrals / 5) * 100);
+                else if (achievement.id === 'ten_referrals') progress = Math.min(100, (state.progress.referrals / 10) * 100);
+                else if (achievement.id === 'all_tasks_done') progress = Math.min(100, (state.completedTasks.length / 2) * 100);
+                else if (achievement.id === 'level_5') progress = Math.min(100, (state.progress.level / 5) * 100);
+                else if (achievement.id === 'all_skins') progress = Math.min(100, (state.purchasedSkins.length / 5) * 100);
+                return { ...achievement, progress, isUnlocked };
+            });
+            list.innerHTML = completed.map(item => `
+                <div class="achievement-card rounded-2xl border ${item.isUnlocked ? 'border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'} p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center ${item.isUnlocked ? 'bg-emerald-500 text-white' : 'bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-300'}">
+                            <i class="${item.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="font-black text-gray-800 dark:text-white">${item.title}</div>
+                                <div class="text-xs font-black ${item.isUnlocked ? 'text-emerald-600' : 'text-gray-500'}">${item.isUnlocked ? 'Виконано' : 'В процесі'}</div>
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">${item.description}</div>
+                            <div class="text-xs font-bold text-amber-500 mt-2">Нагорода: +${item.reward.toLocaleString('ru-RU')} 🪙</div>
+                            <div class="progress-track h-2 rounded-full overflow-hidden mt-3">
+                                <div class="progress-fill h-full rounded-full ${item.isUnlocked ? 'bg-emerald-500' : 'bg-gradient-to-r from-sky-500 to-amber-400'}" style="width: ${item.progress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            if (count) count.textContent = `${unlocked.length} / ${ACHIEVEMENTS_DB.length}`;
+        }
+
+        function updateLevelUI() {
+            const levelEl = document.getElementById('level-badge');
+            const xpEl = document.getElementById('xp-text');
+            const progressEl = document.getElementById('xp-progress');
+            if (!state.progress) return;
+            const nextLevelXp = state.progress.level * 1000;
+            const percent = Math.min(100, Math.round((state.progress.xp / nextLevelXp) * 100));
+            if (levelEl) levelEl.textContent = state.progress.level;
+            if (xpEl) xpEl.textContent = `${state.progress.xp} / ${nextLevelXp} XP`;
+            if (progressEl) progressEl.style.width = `${percent}%`;
+        }
+
+        function updateDailyRewardUI() {
+            const badge = document.getElementById('daily-streak-badge');
+            const text = document.getElementById('daily-reward-text');
+            const timer = document.getElementById('daily-timer');
+            const button = document.getElementById('daily-claim-btn');
+            if (!state.progress) return;
+            if (badge) badge.textContent = `Серія ${state.progress.dailyStreak || 0}`;
+            const canClaim = !state.progress.lastDailyClaim || Date.now() - new Date(state.progress.lastDailyClaim).getTime() >= 86400000;
+            const reward = 5000 + Math.max(0, (state.progress.dailyStreak || 0)) * 1500;
+            if (text) text.textContent = canClaim ? `Готово до отримання: ${reward.toLocaleString('ru-RU')} 🪙` : 'Нагорода буде доступна за 24 години.';
+            if (button) {
+                button.disabled = !canClaim;
+                button.className = canClaim ? 'bg-murmansk text-white px-4 py-2 rounded-full hover:bg-sky-600 transition' : 'bg-gray-300 text-gray-600 px-4 py-2 rounded-full cursor-not-allowed';
+            }
+            if (timer) {
+                if (!canClaim && state.progress.lastDailyClaim) {
+                    const diff = 86400000 - (Date.now() - new Date(state.progress.lastDailyClaim).getTime());
+                    const hrs = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                    const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                    const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                    timer.textContent = `${hrs}:${mins}:${secs}`;
+                } else {
+                    timer.textContent = 'Готово';
+                }
+            }
+        }
+
+        function claimDailyReward() {
+            if (!state.progress) return;
+            const now = Date.now();
+            const last = state.progress.lastDailyClaim ? new Date(state.progress.lastDailyClaim).getTime() : 0;
+            const canClaim = !state.progress.lastDailyClaim || now - last >= 86400000;
+            if (!canClaim) {
+                showToast('Щоденну нагороду можна отримати лише раз на 24 години.', 'error');
+                return;
+            }
+            const nextStreak = state.progress.lastDailyClaim && now - last < 86400000 ? state.progress.dailyStreak : (state.progress.dailyStreak || 0) + 1;
+            const reward = 5000 + Math.max(0, nextStreak - 1) * 1500;
+            state.clicker.coins += reward;
+            state.progress.dailyStreak = nextStreak;
+            state.progress.lastDailyClaim = new Date(now).toISOString();
+            persistProgressState();
+            updateDailyRewardUI();
+            updateClickerUI();
+            awardXp(80, 'daily');
+            showToast(`🎁 Щоденна нагорода: +${reward.toLocaleString('ru-RU')} 🪙`, 'success');
+        }
+
+        function updateProfileStats() {
+            const grid = document.getElementById('profile-stats-grid');
+            if (!grid) return;
+            const cosmeticsOwned = state.cosmetics?.owned?.length || 0;
+            const stats = [
+                { label: 'Рівень', value: state.progress.level, icon: 'fa-solid fa-star' },
+                { label: 'XP', value: state.progress.xp, icon: 'fa-solid fa-fire' },
+                { label: 'Монет', value: state.clicker.coins, icon: 'fa-solid fa-coins' },
+                { label: 'Кліків', value: state.progress.clicks, icon: 'fa-solid fa-hand-pointer' },
+                { label: 'Рефералів', value: state.progress.referrals, icon: 'fa-solid fa-user-plus' },
+                { label: 'Входів', value: state.progress.loginCount, icon: 'fa-solid fa-right-to-bracket' },
+                { label: 'Завдань', value: state.completedTasks.length, icon: 'fa-solid fa-list-check' },
+                { label: 'Досягнень', value: state.progress.achievementsUnlocked.length, icon: 'fa-solid fa-trophy' },
+                { label: 'Серія', value: state.progress.dailyStreak, icon: 'fa-solid fa-gift' },
+                { label: 'Предметів', value: cosmeticsOwned, icon: 'fa-solid fa-sparkles' }
+            ];
+            const progressPercent = Math.min(100, Math.round((state.progress.xp / (state.progress.level * 1000)) * 100));
+            const achievementPercent = Math.round((state.progress.achievementsUnlocked.length / ACHIEVEMENTS_DB.length) * 100);
+            const taskPercent = Math.round((state.completedTasks.length / 10) * 100);
+            grid.innerHTML = `
+                ${stats.map(stat => `
+                    <div class="stat-card text-center">
+                        <div class="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">${stat.label}</div>
+                        <div class="text-xl font-black text-sky-600 dark:text-sky-300 mt-2" data-counter="${stat.value}">${stat.value}</div>
+                        <div class="text-xs text-gray-400 mt-2"><i class="${stat.icon}"></i></div>
+                    </div>
+                `).join('')}
+                <div class="col-span-full mt-4 space-y-3">
+                    <div class="rounded-2xl bg-slate-50 dark:bg-slate-900/40 p-3">
+                        <div class="flex justify-between text-sm font-black text-gray-700 dark:text-gray-200 mb-2"><span>XP до нового рівня</span><span>${progressPercent}%</span></div>
+                        <div class="progress-track h-2 rounded-full overflow-hidden"><div class="progress-fill h-full rounded-full bg-gradient-to-r from-sky-500 to-amber-400" style="width: ${progressPercent}%"></div></div>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 dark:bg-slate-900/40 p-3">
+                        <div class="flex justify-between text-sm font-black text-gray-700 dark:text-gray-200 mb-2"><span>Досягнення</span><span>${achievementPercent}%</span></div>
+                        <div class="progress-track h-2 rounded-full overflow-hidden"><div class="progress-fill h-full rounded-full bg-emerald-500" style="width: ${achievementPercent}%"></div></div>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 dark:bg-slate-900/40 p-3">
+                        <div class="flex justify-between text-sm font-black text-gray-700 dark:text-gray-200 mb-2"><span>Квести</span><span>${taskPercent}%</span></div>
+                        <div class="progress-track h-2 rounded-full overflow-hidden"><div class="progress-fill h-full rounded-full bg-purple-500" style="width: ${taskPercent}%"></div></div>
+                    </div>
+                </div>
+            `;
+            animateCounters();
+        }
+
+        function renderCosmeticsShop() {
+            const container = document.getElementById('cosmetics-shop');
+            if (!container) return;
+            const ownedItems = state.cosmetics?.owned || [];
+            container.innerHTML = COSMETICS_DB.map(item => {
+                const owned = ownedItems.includes(item.id);
+                const equipped = state.cosmetics?.equipped?.[item.category] === item.id;
+                return `
+                    <div class="cosmetic-card rounded-2xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <div class="text-2xl">${item.icon}</div>
+                                <div class="font-black text-gray-800 dark:text-white">${item.name}</div>
+                                <div class="text-xs font-semibold text-gray-500">${item.price.toLocaleString('ru-RU')} 🪙</div>
+                            </div>
+                            <button onclick="buyCosmetic('${item.id}')" class="bg-murmansk text-white px-3 py-2 rounded-full text-sm font-black">${owned ? (equipped ? 'Надіто' : 'Надіти') : 'Купити'}</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buyCosmetic(id) {
+            const item = COSMETICS_DB.find(entry => entry.id === id);
+            if (!item) return;
+            if (!state.cosmetics.owned.includes(id)) {
+                if (state.clicker.coins < item.price) {
+                    showToast('Бракує монет для покупки.', 'error');
+                    return;
+                }
+                state.clicker.coins -= item.price;
+                state.cosmetics.owned.push(id);
+                showToast(`🛍️ Куплено: ${item.name}`, 'success');
+            }
+            state.cosmetics.equipped[item.category] = id;
+            awardXp(60, 'purchase');
+            persistProgressState();
+            updateClickerUI();
+            renderCosmeticsShop();
+            applyCosmetics();
+            updateProfileStats();
+        }
+
+        function applyCosmetics() {
+            const avatarIcon = document.getElementById('profile-avatar-icon');
+            const nameEl = document.getElementById('profile-name');
+            const roleEl = document.getElementById('profile-role');
+            if (!avatarIcon || !nameEl || !roleEl) return;
+            const selected = state.cosmetics.equipped;
+            if (selected.frame !== 'none') {
+                avatarIcon.classList.add('ring-4', 'ring-offset-2');
+                avatarIcon.style.boxShadow = '0 0 0 4px rgba(14,165,233,0.35)';
+            } else {
+                avatarIcon.classList.remove('ring-4', 'ring-offset-2');
+                avatarIcon.style.boxShadow = '';
+            }
+            if (selected.profileColor === 'default') {
+                avatarIcon.className = 'w-24 h-24 bg-gradient-to-br from-sky-100 to-sky-200 rounded-full mx-auto flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg';
+            } else {
+                avatarIcon.className = 'w-24 h-24 bg-gradient-to-br from-amber-100 to-rose-200 rounded-full mx-auto flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg';
+            }
+            nameEl.style.color = selected.nickColor === 'default' ? '' : (selected.nickColor === 'nick_blue' ? '#0ea5e9' : '#f59e0b');
+            roleEl.className = selected.badge === 'badge_legend' ? 'inline-block mt-3 bg-amber-100 text-amber-700 text-xs px-3 py-1 rounded-full font-black uppercase tracking-wider shadow-sm' : 'inline-block mt-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider shadow-sm';
+        }
 
         function showLoader() {
             document.getElementById('site-loader')?.classList.remove('hidden');
@@ -684,6 +1078,7 @@
         window.onload = async () => {
             showLoader();
             loadLocalTheme();
+            loadProgressState();
             createSnowflakes();
             attachRippleEffect();
             
@@ -714,6 +1109,10 @@
             await fetchNewsFromDB();
             renderNews();
             renderShopSkins();
+            renderCosmeticsShop();
+            updateAchievementsUI();
+            updateDailyRewardUI();
+            updateProfileStats();
             animateCounters();
             
             setInterval(regenerateEnergy, 2000);
@@ -792,6 +1191,8 @@
                     localStorage.setItem('murmansk_user_email', email);
                     localStorage.setItem('murmansk_user_pass', password);
                 }
+                const isNewUser = authMode === 'register' || (isTgLogin && !user);
+                handleProgressOnLogin(isNewUser);
                 calculateOfflineEarnings(user);
                 showToast("Вход выполнен!", "success");
             } catch (err) { showToast(err.message, "error"); }
@@ -802,6 +1203,11 @@
                 const {data: refUser} = await supabaseClient.from('users').select('coins, ref_count').eq('id', refId).maybeSingle();
                 if(refUser) {
                     await supabaseClient.from('users').update({ coins: (refUser.coins || 0) + 50000, ref_count: (refUser.ref_count || 0) + 1 }).eq('id', refId);
+                    if (state.progress) {
+                        state.progress.referrals += 1;
+                        awardXp(120, 'referral');
+                        persistProgressState();
+                    }
                 }
             } catch(e) {}
         }
@@ -813,6 +1219,7 @@
             state.completedTasks = userData.completed_tasks ? userData.completed_tasks.split(',') : [];
             state.equippedSkin = userData.equipped_skin || 'default';
             state.purchasedSkins = userData.purchased_skins ? userData.purchased_skins.split(',') : ['default'];
+            loadProgressState();
             
             if(userData.theme && userData.theme !== localStorage.getItem('theme')) {
                 localStorage.setItem('theme', userData.theme); loadLocalTheme();
@@ -835,6 +1242,32 @@
                 if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
             }
             renderShopSkins();
+            updateAchievementsUI(); updateDailyRewardUI(); updateProfileStats(); renderCosmeticsShop(); applyCosmetics();
+        }
+
+        function handleProgressOnLogin(isNewUser) {
+            if (!state.progress) loadProgressState();
+            const now = new Date().toISOString();
+            if (!state.progress.registeredAt) state.progress.registeredAt = state.user?.created_at || now;
+            if (!state.progress.lastLoginAt) state.progress.lastLoginAt = now;
+            state.progress.loginCount += 1;
+            state.progress.lastLoginAt = now;
+            state.progress.tasksCompleted = state.completedTasks.length;
+            state.progress.referrals = Number(state.user?.ref_count || state.progress.referrals || 0);
+            if (isNewUser) unlockAchievement('first_registration');
+            unlockAchievement('first_login');
+            if (state.clicker.coins >= 1000) unlockAchievement('first_1000_coins');
+            if (state.clicker.coins >= 10000) unlockAchievement('first_10000_coins');
+            if (state.progress.referrals >= 1) unlockAchievement('first_referral');
+            if (state.progress.referrals >= 5) unlockAchievement('five_referrals');
+            if (state.progress.referrals >= 10) unlockAchievement('ten_referrals');
+            if (state.completedTasks.length >= 2) unlockAchievement('all_tasks_done');
+            if (state.progress.level >= 5) unlockAchievement('level_5');
+            if (state.purchasedSkins.length >= 5) unlockAchievement('all_skins');
+            persistProgressState();
+            updateAchievementsUI();
+            updateDailyRewardUI();
+            updateProfileStats();
         }
 
         function calculateOfflineEarnings(u) {
@@ -908,6 +1341,11 @@
                 document.getElementById('edit-name').value = state.user.name || '';
                 document.getElementById('edit-avatar').value = state.user.avatar_url || '';
                 document.getElementById('edit-bio').value = state.user.bio || '';
+                updateAchievementsUI();
+                updateDailyRewardUI();
+                updateProfileStats();
+                renderCosmeticsShop();
+                applyCosmetics();
             } else {
                 document.getElementById('auth-form-container')?.classList.remove('hidden');
                 document.getElementById('user-dashboard')?.classList.add('hidden');
@@ -984,6 +1422,10 @@
                 state.completedTasks.push(taskId);
                 try {
                     await supabaseClient.from('users').update({ coins: state.clicker.coins, completed_tasks: state.completedTasks.join(',') }).eq('id', state.user.id);
+                    state.progress = state.progress || { xp: 0, level: 1, clicks: 0, referrals: 0, loginCount: 0, tasksCompleted: 0, achievementsUnlocked: [], dailyStreak: 0, lastDailyClaim: null, registeredAt: null, lastLoginAt: null };
+                    state.progress.tasksCompleted = state.completedTasks.length;
+                    awardXp(75, 'task');
+                    unlockAchievement('all_tasks_done');
                     updateClickerUI(); updateEarnUI(); showToast(`+${reward.toLocaleString('ru-RU')} 🪙`, "success");
                 } catch(e) {}
             }, 5000); 
@@ -999,6 +1441,10 @@
                 if(state.completedTasks.includes('promo_muu2026')) return showToast("Код использован!", "error");
                 state.clicker.coins += 5000; state.completedTasks.push('promo_muu2026');
                 showToast("Код принят! +5,000 🪙", "success");
+                state.progress = state.progress || { xp: 0, level: 1, clicks: 0, referrals: 0, loginCount: 0, tasksCompleted: 0, achievementsUnlocked: [], dailyStreak: 0, lastDailyClaim: null, registeredAt: null, lastLoginAt: null };
+                state.progress.tasksCompleted = state.completedTasks.length;
+                awardXp(60, 'task');
+                unlockAchievement('all_tasks_done');
                 supabaseClient.from('users').update({ coins: state.clicker.coins, completed_tasks: state.completedTasks.join(',') }).eq('id', state.user.id);
                 updateClickerUI(); input.value = '';
             } else { showToast("Неверный код!", "error"); }
@@ -1008,6 +1454,9 @@
             if (state.clicker.energy > 0) {
                 const earned = 1 * state.multiplier;
                 state.clicker.coins += earned; state.clicker.energy--;
+                state.progress = state.progress || { xp: 0, level: 1, clicks: 0, referrals: 0, loginCount: 0, tasksCompleted: 0, achievementsUnlocked: [], dailyStreak: 0, lastDailyClaim: null, registeredAt: null, lastLoginAt: null };
+                state.progress.clicks += 1;
+                awardXp(5, 'click');
                 updateClickerUI();
 
                 const rect = e.target.getBoundingClientRect();
@@ -1055,6 +1504,7 @@
                     if(state.multiplier >= 2) return showToast("Уже куплено!", "error");
                     await supabaseClient.from('users').update({click_multiplier: 2}).eq('id', state.user.id);
                     state.clicker.coins -= price; state.multiplier = 2;
+                    awardXp(150, 'purchase');
                     document.getElementById('click-multiplier-badge')?.classList.remove('hidden');
                     const btn = document.getElementById('btn-buy-double'); if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
                     showToast("Дабл-клик активирован!", "success");
@@ -1063,6 +1513,7 @@
                     if(state.autoClicker) return showToast("Уже куплено!", "error");
                     await supabaseClient.from('users').update({auto_clicker: true}).eq('id', state.user.id);
                     state.clicker.coins -= price; state.autoClicker = true;
+                    awardXp(180, 'purchase');
                     document.getElementById('auto-clicker-badge')?.classList.remove('hidden');
                     const btn = document.getElementById('btn-buy-auto'); if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
                     showToast("Автодоярка включена!", "success");
@@ -1076,6 +1527,7 @@
                         const newPurchased = [...state.purchasedSkins, skinId].join(',');
                         await supabaseClient.from('users').update({purchased_skins: newPurchased, equipped_skin: skinId}).eq('id', state.user.id);
                         state.clicker.coins -= price; state.purchasedSkins.push(skinId); state.equippedSkin = skinId;
+                        awardXp(90, 'purchase');
                         applySkin(skinId); renderShopSkins(); showToast("Куплено и надето!", "success");
                     }
                 }
@@ -1349,12 +1801,50 @@
         }
 
         function translateToMoo() {
-            let text = document.getElementById('human-text').value;
+            const input = document.getElementById('human-text');
             const cowBox = document.getElementById('cow-text');
-            if(!text) { cowBox.innerText = "МУУ..."; return; }
-            text = text.replace(/у/g, 'ууу').replace(/У/g, 'УУУ').replace(/([.,!?;]+)/g, '$1 муууу');
-            text = text.replace(/человек/gi, 'двуногий').replace(/молоко/gi, 'священный нектар');
-            cowBox.innerText = text;
+            const statusEl = document.getElementById('translator-status');
+            const source = input?.value || '';
+            if (!source.trim()) {
+                cowBox.innerHTML = '<span class="text-amber-600">Мууу... введи текст, щоб почати переклад.</span>';
+                if (statusEl) statusEl.textContent = 'Порожнє поле — без перекладу.';
+                return;
+            }
+            if (statusEl) statusEl.textContent = 'Перекладаємо слово за словом...';
+            cowBox.classList.remove('translator-output-animate');
+            void cowBox.offsetWidth;
+            cowBox.classList.add('translator-output-animate');
+
+            const result = Array.from(source.matchAll(/(\s+|[^\p{L}\p{N}\s]+)/gu)).map(match => match[0]).join('');
+            const tokens = source.split(/(\s+|[^\p{L}\p{N}\s]+)/gu).filter(Boolean);
+            const translated = tokens.map(token => {
+                if (/^\s+$/.test(token)) return token;
+                if (/^[^\p{L}\p{N}]+$/u.test(token)) return token;
+                return `Мууу ${token}`;
+            }).join('');
+
+            cowBox.innerText = translated;
+            if (statusEl) statusEl.textContent = 'Переклад готовий.';
+            awardXp(12, 'translation');
+            persistProgressState();
+            updateProfileStats();
+        }
+
+        function copyTranslatedText() {
+            const output = document.getElementById('cow-text');
+            if (!output) return;
+            const value = output.innerText.trim();
+            if (!value) { showToast('Нічого копіювати.', 'error'); return; }
+            navigator.clipboard.writeText(value).then(() => showToast('Переклад скопійовано.', 'success')).catch(() => showToast('Не вдалося скопіювати.', 'error'));
+        }
+
+        function clearTranslator() {
+            const input = document.getElementById('human-text');
+            const output = document.getElementById('cow-text');
+            const statusEl = document.getElementById('translator-status');
+            if (input) input.value = '';
+            if (output) output.innerText = 'Мууу...';
+            if (statusEl) statusEl.textContent = 'Поле очищено.';
         }
 
         function toggleTheme() {
