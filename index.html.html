@@ -787,6 +787,69 @@
             localStorage.setItem('murmansk_cosmetics_state', JSON.stringify(state.cosmetics));
         }
 
+        async function initializeUserDatabaseRecords(userData, isNewUser = false) {
+            if (!userData?.id) return;
+            const userId = userData.id;
+            const nowIso = new Date().toISOString();
+
+            try {
+                await supabaseClient.from('user_statistics').upsert([{
+                    user_id: userId,
+                    clicks_total: 0,
+                    purchases_total: 0,
+                    referrals_total: Number(userData.ref_count || 0),
+                    tasks_completed_total: 0,
+                    logins_total: isNewUser ? 1 : 0,
+                    coins_earned_total: Number(userData.coins || 0),
+                    coins_spent_total: 0,
+                    created_at: nowIso,
+                    updated_at: nowIso
+                }], { onConflict: 'user_id' });
+            } catch (e) {}
+
+            try {
+                const achievementPayload = isNewUser ? [
+                    { user_id: userId, achievement_key: 'first_registration', progress_value: 100, is_unlocked: true, unlocked_at: nowIso, created_at: nowIso },
+                    { user_id: userId, achievement_key: 'first_login', progress_value: 100, is_unlocked: true, unlocked_at: nowIso, created_at: nowIso }
+                ] : [
+                    { user_id: userId, achievement_key: 'first_login', progress_value: 100, is_unlocked: true, unlocked_at: nowIso, created_at: nowIso }
+                ];
+                await supabaseClient.from('user_achievements').upsert(achievementPayload, { onConflict: 'user_id,achievement_key' });
+            } catch (e) {}
+
+            try {
+                await supabaseClient.from('user_profile_equipment').upsert([{
+                    user_id: userId,
+                    frame_key: 'default',
+                    color_key: 'default',
+                    avatar_key: 'default',
+                    background_key: 'default',
+                    effect_key: 'default',
+                    badge_key: 'default',
+                    updated_at: nowIso
+                }], { onConflict: 'user_id' });
+            } catch (e) {}
+
+            try {
+                if (isNewUser) {
+                    await supabaseClient.from('user_daily_rewards').insert([{ user_id: userId, reward_amount: 0, streak_value: 0, claimed_at: nowIso }]);
+                }
+            } catch (e) {}
+        }
+
+        async function syncAchievementToSupabase(achievementId, progressValue, unlocked) {
+            if (!state.user?.id) return;
+            try {
+                await supabaseClient.from('user_achievements').upsert([{
+                    user_id: state.user.id,
+                    achievement_key: achievementId,
+                    progress_value: progressValue,
+                    is_unlocked: unlocked,
+                    unlocked_at: unlocked ? new Date().toISOString() : null
+                }], { onConflict: 'user_id,achievement_key' });
+            } catch (e) {}
+        }
+
         function awardXp(amount, source = 'general') {
             if (!state.progress) return;
             state.progress.xp += amount;
@@ -815,6 +878,7 @@
             persistProgressState();
             updateAchievementsUI();
             updateClickerUI();
+            syncAchievementToSupabase(id, 100, true);
             showToast(`🏅 ${achievement.title} +${achievement.reward.toLocaleString('ru-RU')} 🪙`, 'success');
             return true;
         }
@@ -1186,12 +1250,13 @@
                     if (refId) rewardReferrer(refId);
                 }
 
+                const isNewUser = authMode === 'register' || (isTgLogin && !user);
+                await initializeUserDatabaseRecords(user, isNewUser);
                 setupUser(user);
                 if (!isTgLogin) {
                     localStorage.setItem('murmansk_user_email', email);
                     localStorage.setItem('murmansk_user_pass', password);
                 }
-                const isNewUser = authMode === 'register' || (isTgLogin && !user);
                 handleProgressOnLogin(isNewUser);
                 calculateOfflineEarnings(user);
                 showToast("Вход выполнен!", "success");
