@@ -34,10 +34,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        body.dark {
-            background-color: #0f172a;
-            color: #e2e8f0;
-        }
+        body.dark { background-color: #0f172a; color: #e2e8f0; }
 
         .glass-panel {
             background: rgba(255, 255, 255, 0.85);
@@ -82,16 +79,14 @@
         /* Modals & Toasts */
         .toast-enter { animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
         #news-modal-overlay { backdrop-filter: blur(5px); }
     </style>
 </head>
 <body class="relative transition-colors duration-300">
 
-    <!-- Спливаючі повідомлення (Toasts) замість alert() -->
     <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Офлайн заробіток Попап -->
+    <!-- Офлайн заробіток -->
     <div id="offline-popup" class="fixed top-4 left-0 right-0 z-[90] flex justify-center hidden">
         <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-black px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4">
             <i class="fa-solid fa-robot text-3xl"></i>
@@ -103,10 +98,10 @@
         </div>
     </div>
 
-    <!-- Модальне вікно для повної Новини -->
+    <!-- Повна Новина (Модалка) -->
     <div id="news-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4">
         <div id="news-modal-overlay" class="absolute inset-0 bg-black bg-opacity-60" onclick="closeNewsModal()"></div>
-        <div class="relative bg-white dark:bg-darkpanel rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col z-10 transform transition-all">
+        <div class="relative bg-white dark:bg-darkpanel rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col z-10">
             <button onclick="closeNewsModal()" class="absolute top-4 right-4 bg-black bg-opacity-50 text-white w-8 h-8 rounded-full hover:bg-opacity-70 z-20"><i class="fa-solid fa-xmark"></i></button>
             <img id="modal-news-img" src="" class="w-full h-64 object-cover">
             <div class="p-6 md:p-8">
@@ -132,7 +127,7 @@
                     <button onclick="switchView('earn')" id="btn-earn" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-list-check"></i><span class="hidden md:inline ml-1">Задания</span></button>
                     <button onclick="switchView('airdrop')" id="btn-airdrop" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-parachute-box"></i><span class="hidden md:inline ml-1">Airdrop</span></button>
                     <button onclick="switchView('shop')" id="btn-shop" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-store"></i><span class="hidden md:inline ml-1">Магазин</span></button>
-                    <button onclick="switchView('chat')" id="btn-chat" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap relative"><i class="fa-solid fa-comments"></i><span class="hidden md:inline ml-1">Чат</span></button>
+                    <button onclick="switchView('chat')" id="btn-chat" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-comments"></i><span class="hidden md:inline ml-1">Чат</span></button>
                     <button onclick="switchView('profile')" id="btn-profile" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-user"></i><span class="hidden md:inline ml-1">Кабинет</span></button>
                 </div>
                 
@@ -146,38 +141,34 @@
     <!-- Основний контент -->
     <main class="flex-grow max-w-6xl mx-auto w-full p-4 pb-20 relative z-10" id="main-content">
         
-        <!-- Вкладка: НОВИНИ -->
+        <!-- НОВИНИ -->
         <section id="view-news" class="space-y-6">
             <div class="text-center mb-8">
                 <h1 class="text-4xl md:text-5xl font-black text-murmansk mb-4 uppercase drop-shadow-md">Новости Стада</h1>
             </div>
-            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Локальні новини з БД (2 колонки) -->
+                <!-- Локальні новини -->
                 <div class="lg:col-span-2 space-y-6">
                     <h3 class="font-black text-2xl dark:text-white mb-4 border-b-2 border-murmansk inline-block pb-1">Эксклюзив</h3>
                     <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
                 
-                <!-- Віджет Telegram (1 колонка) -->
+                <!-- ВІДЖЕТ TELEGRAM (ВИПРАВЛЕНО НА СТРІЧКУ) -->
                 <div class="lg:col-span-1">
                     <div class="glass-panel rounded-2xl p-4 sticky top-24">
                         <h3 class="font-black text-lg mb-4 dark:text-white flex items-center gap-2">
                             <i class="fa-brands fa-telegram text-sky-500 text-2xl"></i> Live из Telegram
                         </h3>
-                        <div class="w-full bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-inner h-[600px] overflow-y-auto">
-                            <!-- Telegram Widget Code -->
-                            <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-post="NovostiMyyyrmanska" data-width="100%"></script>
-                            <div class="p-4 text-center text-gray-500 text-sm font-bold">
-                                Если посты не загрузились, подпишись на <a href="https://t.me/NovostiMyyyrmanska" class="text-murmansk">@NovostiMyyyrmanska</a>
-                            </div>
+                        <div class="w-full bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-inner h-[600px] relative">
+                            <!-- Використовуємо iframe для показу всієї стрічки каналу -->
+                            <iframe src="https://t.me/s/NovostiMyyyrmanska?embed=1" width="100%" height="100%" frameborder="0" class="absolute inset-0 w-full h-full"></iframe>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Вкладка: КЛІКЕР -->
+        <!-- КЛІКЕР -->
         <section id="view-clicker" class="hidden-view">
             <div class="glass-panel rounded-3xl p-8 text-center max-w-sm mx-auto shadow-xl relative">
                 <div class="absolute top-4 right-4 text-xs font-bold text-gray-400" id="sync-status">☁️ Синхронизация</div>
@@ -191,8 +182,11 @@
 
                 <div id="click-multiplier-badge" class="hidden bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-black px-4 py-1 rounded-full mb-4 inline-block mx-auto shadow">🔥 x2 ЗА КЛИК</div>
                 <div id="auto-clicker-badge" class="hidden bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-black px-4 py-1 rounded-full mb-4 mx-auto shadow mt-1">🤖 АВТОДОЯРКА РАБОТАЕТ</div>
+                
+                <!-- Попередження якщо не зайшов в акаунт (Виправлено) -->
+                <div id="auth-warning-clicker" class="hidden bg-red-100 text-red-600 text-xs font-bold px-3 py-2 rounded-lg mb-4 mx-auto border border-red-200">⚠️ Войдите в Кабинет, чтобы сохранить прогресс!</div>
 
-                <!-- Монетка (зі скінами) -->
+                <!-- Монетка -->
                 <div class="relative w-48 h-48 mx-auto mb-8 cursor-pointer coin-btn rounded-full flex items-center justify-center border-4 border-yellow-300" onclick="clickCoin(event)" id="main-coin-btn">
                     <div id="coin-content" class="text-6xl drop-shadow-md text-white"><i class="fa-solid fa-cow"></i></div>
                 </div>
@@ -210,12 +204,11 @@
             </div>
         </section>
 
-        <!-- Вкладка: ЗАРОБІТОК (Завдання та Реферали) -->
+        <!-- ЗАРОБІТОК -->
         <section id="view-earn" class="hidden-view">
             <div class="glass-panel rounded-3xl p-6 max-w-2xl mx-auto shadow-xl">
                 <h2 class="text-3xl font-black text-center dark:text-white mb-6">Заработать Больше</h2>
                 
-                <!-- Реферальна система -->
                 <div class="bg-gradient-to-br from-sky-400 to-murmansk rounded-2xl p-6 text-white mb-8 shadow-lg relative overflow-hidden">
                     <i class="fa-solid fa-users absolute -right-4 -bottom-4 text-9xl opacity-20"></i>
                     <h3 class="font-black text-xl mb-2 relative z-10"><i class="fa-solid fa-user-plus"></i> Запроси бика (Рефералы)</h3>
@@ -227,10 +220,8 @@
                     <div class="text-sm mt-3 font-bold relative z-10 bg-black bg-opacity-20 inline-block px-3 py-1 rounded-lg">Приглашено друзей: <span id="ref-count" class="text-yellow-300">0</span></div>
                 </div>
 
-                <!-- Завдання -->
                 <h3 class="font-black text-xl mb-4 dark:text-white border-b-2 border-gray-200 dark:border-gray-700 pb-2">Задания (Quests)</h3>
                 <div class="space-y-3" id="tasks-list">
-                    <!-- Завдання ТГ -->
                     <div class="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition hover:shadow-md">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-telegram text-2xl text-sky-500"></i></div>
@@ -241,7 +232,6 @@
                         </div>
                         <button id="btn-task-tg" onclick="startTask('tg', 50000, 'https://t.me/NovostiMyyyrmanska')" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-murmansk hover:text-white transition">Выполнить</button>
                     </div>
-                    <!-- Промокод -->
                     <div class="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm mt-4">
                         <div class="w-full">
                             <div class="font-bold dark:text-white mb-2"><i class="fa-solid fa-ticket text-red-500 mr-2"></i>Ввести Промокод</div>
@@ -255,15 +245,13 @@
             </div>
         </section>
 
-        <!-- Вкладка: AIRDROP (Дорожня карта) -->
+        <!-- AIRDROP -->
         <section id="view-airdrop" class="hidden-view">
             <div class="glass-panel rounded-3xl p-6 md:p-10 max-w-3xl mx-auto shadow-xl text-center">
                 <i class="fa-solid fa-parachute-box text-7xl text-murmansk mb-4 drop-shadow-lg"></i>
                 <h2 class="text-4xl font-black dark:text-white mb-2">Moo-Drop</h2>
                 <p class="text-gray-500 dark:text-gray-400 font-bold mb-10 text-lg">Копи монеты, скоро листинг на бирже "Рога и Копыта"!</p>
-                
                 <div class="space-y-6 text-left relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-gradient-to-b before:from-green-500 before:via-murmansk before:to-gray-300">
-                    
                     <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                         <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-gray-800 bg-green-500 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10"><i class="fa-solid fa-check"></i></div>
                         <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
@@ -272,7 +260,6 @@
                             <p class="text-sm text-gray-500 mt-2 font-medium">Создание Telegram канала и первой версии кликера.</p>
                         </div>
                     </div>
-                    
                     <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
                         <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-gray-800 bg-murmansk text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10"><i class="fa-solid fa-spinner fa-spin"></i></div>
                         <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg border-2 border-murmansk transform scale-105">
@@ -281,21 +268,11 @@
                             <p class="text-sm text-gray-500 mt-2 font-medium">Фарм монет, рефералы, квесты и покупка автодоярок.</p>
                         </div>
                     </div>
-                    
-                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-gray-800 bg-gray-300 dark:bg-gray-600 text-gray-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-md z-10"><i class="fa-solid fa-lock"></i></div>
-                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-gray-50 dark:bg-gray-900 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 opacity-70">
-                            <div class="font-bold text-gray-500 text-sm mb-1">Фаза 3 (Скоро)</div>
-                            <div class="font-black dark:text-gray-300 text-xl">Листинг $MOO</div>
-                            <p class="text-sm text-gray-500 mt-2 font-medium">Перевод игровых монет в реальные токены и торговля на бирже.</p>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </section>
 
-        <!-- Вкладка: МАГАЗИН -->
+        <!-- МАГАЗИН -->
         <section id="view-shop" class="hidden-view">
             <div class="glass-panel rounded-3xl p-6 max-w-4xl mx-auto shadow-xl">
                 <div class="text-center mb-8">
@@ -326,52 +303,32 @@
                 </div>
 
                 <h3 class="font-black text-xl mb-4 dark:text-white border-b-2 border-gray-200 dark:border-gray-700 pb-2">Скины на Корову</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="skins-container">
-                    <!-- Скіни генеруються через JS -->
-                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="skins-container"></div>
             </div>
         </section>
 
-        <!-- Вкладка: ЧАТ & ПІДТРИМКА -->
+        <!-- ЧАТ & ПІДТРИМКА -->
         <section id="view-chat" class="hidden-view">
             <div class="glass-panel rounded-3xl p-4 md:p-6 max-w-4xl mx-auto shadow-xl flex flex-col h-[75vh]">
-                
                 <div class="flex flex-col md:flex-row gap-4 h-full">
-                    
-                    <!-- Бокове меню (Тільки на десктопі або по кнопці) -->
                     <div class="w-full md:w-1/3 bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 flex flex-col shadow-inner">
                         <h3 class="font-black text-lg mb-4 dark:text-white border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-comments text-murmansk"></i> Диалоги</h3>
-                        
                         <div class="space-y-2 flex-grow overflow-y-auto">
                             <button onclick="setChatMode('global')" id="tab-chat-global" class="w-full text-left px-4 py-3 rounded-xl font-bold bg-sky-100 text-murmansk transition">🌍 Общий чат</button>
                             <button onclick="setChatMode('support')" id="tab-chat-support" class="w-full text-left px-4 py-3 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">🆘 Поддержка</button>
                         </div>
                     </div>
-
-                    <!-- Основна зона чату -->
                     <div class="w-full md:w-2/3 flex flex-col h-full bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner relative">
-                        
-                        <!-- Шапка чату -->
-                        <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-2xl font-black text-lg dark:text-white" id="chat-header-title">
-                            🌍 Общий чат стада
-                        </div>
-
-                        <!-- Повідомлення -->
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-2xl font-black text-lg dark:text-white" id="chat-header-title">🌍 Общий чат стада</div>
                         <div id="chat-messages" class="flex-grow p-4 overflow-y-auto chat-container flex flex-col">
                             <div class="text-center text-gray-400 text-sm mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Загрузка...</div>
                         </div>
-
-                        <!-- Ввід -->
                         <form onsubmit="sendChatMessage(event)" class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-2xl flex gap-2">
-                            <!-- Кнопка фотографії -->
                             <button type="button" onclick="promptPhotoUrl()" class="p-3 text-gray-400 hover:text-murmansk transition rounded-xl bg-gray-100 dark:bg-gray-700"><i class="fa-solid fa-camera"></i></button>
                             <input type="hidden" id="chat-photo-url" value="">
-                            
                             <input type="text" id="chat-input" class="flex-grow bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-murmansk outline-none font-medium text-sm" placeholder="Муу-кните что-нибудь..." required>
-                            
                             <button type="submit" class="bg-murmansk text-white font-black px-5 rounded-xl hover:bg-sky-600 transition shadow"><i class="fa-solid fa-paper-plane"></i></button>
                         </form>
-
                         <div id="chat-photo-preview" class="absolute bottom-16 left-4 bg-white p-2 rounded-lg shadow-lg border border-gray-200 hidden z-10 flex items-center gap-2">
                             <img src="" class="w-10 h-10 object-cover rounded">
                             <span class="text-xs font-bold text-gray-500">Фото прикреплено</span>
@@ -382,26 +339,21 @@
             </div>
         </section>
 
-        <!-- Вкладка: ТОП КОРІВ -->
+        <!-- ТОП КОРІВ -->
         <section id="view-leaderboard" class="hidden-view">
             <div class="glass-panel rounded-3xl p-6 max-w-xl mx-auto shadow-xl">
                 <h2 class="text-3xl font-black text-center text-gray-800 dark:text-white mb-2 uppercase">🏆 Топ Коров</h2>
-                <p class="text-center text-sm text-gray-500 dark:text-gray-400 font-bold mb-6">Элита Муу-рманска</p>
                 <div id="leaderboard-container" class="space-y-3"></div>
             </div>
         </section>
 
-        <!-- Вкладка: РОЗУМНИЙ ПЕРЕКЛАДАЧ -->
+        <!-- ПЕРЕКЛАДАЧ -->
         <section id="view-translator" class="hidden-view">
             <div class="glass-panel rounded-3xl p-6 md:p-10 max-w-2xl mx-auto shadow-xl">
                 <h2 class="text-3xl font-black text-center text-gray-800 dark:text-white mb-2">Муу-Переводчик 3.0</h2>
-                <p class="text-center text-gray-600 dark:text-gray-400 mb-8 font-semibold">Умный алгоритм: "у" -> "ууу", пунктуация -> " муууу"</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                     <textarea id="human-text" rows="4" class="w-full border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white rounded-xl p-3 focus:border-murmansk font-medium resize-none" placeholder="Напиши: Привет, как дела? Я иду домой."></textarea>
-                    <div id="cow-text" class="w-full h-full min-h-[100px] bg-sky-50 dark:bg-sky-900 border-2 border-sky-100 dark:border-sky-800 rounded-xl p-4 font-black text-sky-800 dark:text-sky-100 flex items-center justify-center text-center text-lg shadow-inner break-words">
-                        МУУ...
-                    </div>
+                    <div id="cow-text" class="w-full h-full min-h-[100px] bg-sky-50 dark:bg-sky-900 border-2 border-sky-100 dark:border-sky-800 rounded-xl p-4 font-black text-sky-800 dark:text-sky-100 flex items-center justify-center text-center text-lg shadow-inner break-words">МУУ...</div>
                 </div>
                 <div class="text-center mt-6">
                     <button onclick="translateToMoo()" class="bg-murmansk text-white font-bold text-lg py-3 px-10 rounded-full hover:bg-sky-600 shadow-xl transition transform hover:scale-105"><i class="fa-solid fa-language mr-2"></i> Перевести</button>
@@ -409,11 +361,10 @@
             </div>
         </section>
 
-        <!-- Вкладка: ПРОФІЛЬ / АВТОРИЗАЦІЯ / АДМІНКА -->
+        <!-- ПРОФІЛЬ / АВТОРИЗАЦІЯ / АДМІНКА -->
         <section id="view-profile" class="hidden-view">
             <div class="glass-panel rounded-3xl p-6 md:p-10 max-w-md mx-auto shadow-xl">
                 
-                <!-- Форма Входу (Дуже проста щоб не було помилок БД) -->
                 <div id="auth-form-container">
                     <h2 class="text-3xl font-black text-center text-gray-800 dark:text-white mb-2" id="auth-title">Вход в стадо</h2>
                     <p class="text-center text-xs text-gray-500 mb-6 font-bold">Без пароля прогресс не сохранится!</p>
@@ -443,7 +394,6 @@
                     </form>
                 </div>
 
-                <!-- Кабінет -->
                 <div id="user-dashboard" class="hidden">
                     <div class="text-center mb-6 relative group">
                         <img id="profile-avatar-img" src="" class="w-24 h-24 rounded-full mx-auto border-4 border-white dark:border-gray-800 shadow-lg object-cover hidden">
@@ -456,7 +406,6 @@
                         <span id="profile-role" class="inline-block mt-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider shadow-sm">Рядовая Корова</span>
                     </div>
 
-                    <!-- Налаштування -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 mb-6 shadow-sm">
                         <h3 class="font-black text-gray-800 dark:text-white mb-3 border-b dark:border-gray-700 pb-2"><i class="fa-solid fa-sliders text-murmansk mr-2"></i> Настройки</h3>
                         <div class="space-y-3 text-sm">
@@ -467,7 +416,6 @@
                         </div>
                     </div>
 
-                    <!-- Панель Адміна -->
                     <div id="admin-panel" class="hidden bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 border-2 border-red-200 dark:border-red-700 rounded-2xl p-5 mb-6 shadow-md">
                         <h3 class="font-black text-red-600 dark:text-red-300 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-crown"></i> Панель Мэра</h3>
                         <form onsubmit="handlePostNews(event)" class="space-y-3">
@@ -486,125 +434,89 @@
     </main>
 
     <script>
-        /* =========================================
-           НАЛАШТУВАННЯ SUPABASE
-           ========================================= */
+        // Ініціалізація БД
         const supabaseUrl = 'https://xnlmdyarjkurseycixef.supabase.co';
         const supabaseKey = 'sb_publishable_nt6a6bPPGafs0vAsivmkdQ_pi9SC7rO';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        /* =========================================
-           ГЛОБАЛЬНИЙ СТАН
-           ========================================= */
         const state = {
             user: null, 
             clicker: { coins: 0, energy: 1000, maxEnergy: 1000, lastSyncCoins: 0, lastSyncEnergy: 1000 },
-            multiplier: 1,
-            autoClicker: false,
-            completedTasks: [],
-            chatMode: 'global',
-            news: [],
-            theme: 'light',
-            equippedSkin: 'default',
-            purchasedSkins: ['default']
+            multiplier: 1, autoClicker: false, completedTasks: [], chatMode: 'global', news: [], theme: 'light',
+            equippedSkin: 'default', purchasedSkins: ['default']
         };
 
         const SKINS_DB = {
-            'default': { name: 'Обычная Корова', icon: 'fa-solid fa-cow', price: 0, color: 'text-white' },
-            'golden':  { name: 'Золотая Корова', icon: 'fa-solid fa-cow', price: 100000, color: 'text-yellow-400' },
+            'default': { name: 'Обычная', icon: 'fa-solid fa-cow', price: 0, color: 'text-white' },
+            'golden':  { name: 'Золотая', icon: 'fa-solid fa-cow', price: 100000, color: 'text-yellow-400' },
             'devil':   { name: 'Дьявольская', icon: 'fa-solid fa-dragon', price: 250000, color: 'text-red-500' },
             'rich':    { name: 'Богачка', icon: 'fa-solid fa-sack-dollar', price: 500000, color: 'text-green-400' },
             'alien':   { name: 'Пришелец', icon: 'fa-brands fa-reddit-alien', price: 1000000, color: 'text-purple-500' }
         };
 
-        /* =========================================
-           ЗАВАНТАЖЕННЯ (INIT)
-           ========================================= */
         window.onload = async () => {
             loadLocalTheme();
             createSnowflakes();
             
-            // 1. Інтеграція Telegram Web App (TMA Авто-вхід)
             let tgUser = null;
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe?.user) {
                 tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-                window.Telegram.WebApp.expand(); // Відкрити на весь екран
+                window.Telegram.WebApp.expand();
             }
 
-            // 2. Перевірка реферального посилання
             const urlParams = new URLSearchParams(window.location.search);
             const refId = urlParams.get('ref');
 
-            // 3. Авторизація
             if (tgUser) {
                 showToast("Вход через Telegram...", "info");
                 const email = `tg_${tgUser.id}@tma.muu`;
                 const name = tgUser.first_name || "ТГ Корова";
-                // Спеціальний безпечний вхід для ТГ без пароля
                 await processLogin(email, tgUser.id.toString(), name, refId, true);
             } else {
                 const savedEmail = localStorage.getItem('murmansk_user_email');
                 const savedPass = localStorage.getItem('murmansk_user_pass');
-                if (savedEmail && savedPass) {
-                    await processLogin(savedEmail, savedPass, null, null, false);
-                }
+                if (savedEmail && savedPass) await processLogin(savedEmail, savedPass, null, null, false);
             }
 
-            // Завантаження загальних даних
             await fetchNewsFromDB();
             renderNews();
             renderShopSkins();
             
-            // Цикли
             setInterval(regenerateEnergy, 2000);
             setInterval(syncGameDataWithCloud, 5000);
-            setInterval(offlineFarmLoop, 1000); // Працює поки відкритий сайт
+            setInterval(offlineFarmLoop, 1000);
             
             setInterval(() => {
-                if(!document.getElementById('view-chat').classList.contains('hidden-view')) loadChatMessages();
+                if(!document.getElementById('view-chat')?.classList.contains('hidden-view')) loadChatMessages();
             }, 5000);
         };
 
-        /* =========================================
-           СИСТЕМА TOAST (Сповіщення)
-           ========================================= */
         function showToast(msg, type = "info") {
             const container = document.getElementById('toast-container');
+            if(!container) return;
             const el = document.createElement('div');
-            
             let bg = "bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-l-4 border-sky-500";
             let icon = '<i class="fa-solid fa-circle-info text-sky-500"></i>';
             
-            if (type === "error") {
-                bg = "bg-red-50 dark:bg-red-900 border-l-4 border-red-500 text-red-800 dark:text-red-100";
-                icon = '<i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-300"></i>';
-            } else if (type === "success") {
-                bg = "bg-green-50 dark:bg-green-900 border-l-4 border-green-500 text-green-800 dark:text-green-100";
-                icon = '<i class="fa-solid fa-check-circle text-green-500 dark:text-green-300"></i>';
-            }
+            if (type === "error") { bg = "bg-red-50 dark:bg-red-900 border-l-4 border-red-500 text-red-800 dark:text-red-100"; icon = '<i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-300"></i>'; } 
+            else if (type === "success") { bg = "bg-green-50 dark:bg-green-900 border-l-4 border-green-500 text-green-800 dark:text-green-100"; icon = '<i class="fa-solid fa-check-circle text-green-500 dark:text-green-300"></i>'; }
 
             el.className = `p-4 rounded-lg shadow-lg font-bold text-sm flex items-center gap-3 toast-enter ${bg} pointer-events-auto`;
             el.innerHTML = `${icon} <span>${escapeHtml(msg)}</span>`;
-            
             container.appendChild(el);
             setTimeout(() => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(-20px)';
-                el.style.transition = 'all 0.3s';
+                el.style.opacity = '0'; el.style.transform = 'translateY(-20px)'; el.style.transition = 'all 0.3s';
                 setTimeout(() => el.remove(), 300);
             }, 4000);
         }
 
-        /* =========================================
-           АВТОРИЗАЦІЯ (EMAIL / TELEGRAM)
-           ========================================= */
         let authMode = 'login';
         
         function setAuthMode(mode) {
             authMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? "w-1/2 py-2 font-bold text-murmansk border-b-2 border-murmansk" : "w-1/2 py-2 font-bold text-gray-400 border-b-2 border-transparent cursor-pointer";
             document.getElementById('tab-register').className = mode === 'register' ? "w-1/2 py-2 font-bold text-murmansk border-b-2 border-murmansk" : "w-1/2 py-2 font-bold text-gray-400 border-b-2 border-transparent cursor-pointer";
-            document.getElementById('field-name').classList.toggle('hidden', mode === 'login');
+            document.getElementById('field-name')?.classList.toggle('hidden', mode === 'login');
             document.getElementById('auth-name').required = mode === 'register';
         }
 
@@ -613,11 +525,9 @@
             const email = document.getElementById('auth-email').value.trim().toLowerCase();
             const password = document.getElementById('auth-password').value;
             const name = document.getElementById('auth-name').value.trim();
-            const btnSpinner = document.getElementById('auth-btn-spinner');
-            
-            btnSpinner.classList.remove('hidden');
+            document.getElementById('auth-btn-spinner')?.classList.remove('hidden');
             await processLogin(email, password, name, null, false);
-            btnSpinner.classList.add('hidden');
+            document.getElementById('auth-btn-spinner')?.classList.add('hidden');
         }
 
         async function processLogin(email, password, name, refId, isTgLogin) {
@@ -625,87 +535,65 @@
                 let { data: user, error: searchError } = await supabaseClient.from('users').select('*').eq('email', email).maybeSingle();
 
                 if (authMode === 'login' && !isTgLogin) {
-                    if (!user) throw new Error("Акаунт не найден!");
+                    if (!user) throw new Error("Аккаунт не найден!");
                     if (user.password !== password) throw new Error("Неверный пароль!");
                 } 
                 else if (authMode === 'register' || (isTgLogin && !user)) {
                     if (user && !isTgLogin) throw new Error("Эта почта уже занята!");
-                    
                     const isAdmin = email === 'mste747@gmail.com';
-                    // Базовий об'єкт, щоб уникнути помилок відсутніх колонок
                     let newUserObj = { email, password, name: name || "Корова", coins: 0, energy: 1000, is_admin: isAdmin };
-                    
-                    // Додаємо реферальний бонус, якщо перейшли за лінком
                     if(refId) newUserObj.coins = 50000;
 
                     const { data: createdUser, error: insertError } = await supabaseClient.from('users').insert([newUserObj]).select().single();
-                    if (insertError) throw new Error("Ошибка БД: " + insertError.message);
+                    if (insertError) throw new Error(insertError.message);
                     user = createdUser;
-                    
                     if (refId) rewardReferrer(refId);
                 }
 
                 setupUser(user);
-                
-                // Зберігаємо сесію
                 if (!isTgLogin) {
                     localStorage.setItem('murmansk_user_email', email);
                     localStorage.setItem('murmansk_user_pass', password);
                 }
-                
                 calculateOfflineEarnings(user);
-                showToast("Вход выполнен успешно!", "success");
-
-            } catch (err) {
-                showToast(err.message, "error");
-            }
+                showToast("Вход выполнен!", "success");
+            } catch (err) { showToast(err.message, "error"); }
         }
 
         async function rewardReferrer(refId) {
             try {
                 const {data: refUser} = await supabaseClient.from('users').select('coins, ref_count').eq('id', refId).maybeSingle();
                 if(refUser) {
-                    await supabaseClient.from('users').update({
-                        coins: (refUser.coins || 0) + 50000,
-                        ref_count: (refUser.ref_count || 0) + 1
-                    }).eq('id', refId);
+                    await supabaseClient.from('users').update({ coins: (refUser.coins || 0) + 50000, ref_count: (refUser.ref_count || 0) + 1 }).eq('id', refId);
                 }
-            } catch(e) { console.warn("Referral error", e); }
+            } catch(e) {}
         }
 
         function setupUser(userData) {
             state.user = userData;
-            // Безпечне зчитування даних (якщо колонки ще нема, беремо дефолт)
-            state.clicker.coins = userData.coins || 0;
-            state.clicker.energy = userData.energy || 1000;
-            state.multiplier = userData.click_multiplier || 1;
-            state.autoClicker = userData.auto_clicker || false;
+            state.clicker.coins = userData.coins || 0; state.clicker.energy = userData.energy || 1000;
+            state.multiplier = userData.click_multiplier || 1; state.autoClicker = userData.auto_clicker || false;
             state.completedTasks = userData.completed_tasks ? userData.completed_tasks.split(',') : [];
             state.equippedSkin = userData.equipped_skin || 'default';
             state.purchasedSkins = userData.purchased_skins ? userData.purchased_skins.split(',') : ['default'];
             
             if(userData.theme && userData.theme !== localStorage.getItem('theme')) {
-                localStorage.setItem('theme', userData.theme);
-                loadLocalTheme();
+                localStorage.setItem('theme', userData.theme); loadLocalTheme();
             }
 
-            state.clicker.lastSyncCoins = state.clicker.coins;
-            state.clicker.lastSyncEnergy = state.clicker.energy;
+            state.clicker.lastSyncCoins = state.clicker.coins; state.clicker.lastSyncEnergy = state.clicker.energy;
             
-            updateClickerUI();
-            updateProfileUI();
-            updateEarnUI();
-            applySkin(state.equippedSkin);
+            updateClickerUI(); updateProfileUI(); updateEarnUI(); applySkin(state.equippedSkin);
             
-            document.getElementById('auth-warning-clicker').classList.add('hidden');
+            document.getElementById('auth-warning-clicker')?.classList.add('hidden');
             
             if(state.multiplier > 1) {
-                document.getElementById('click-multiplier-badge').classList.remove('hidden');
+                document.getElementById('click-multiplier-badge')?.classList.remove('hidden');
                 const btn = document.getElementById('btn-buy-double');
                 if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
             }
             if(state.autoClicker) {
-                document.getElementById('auto-clicker-badge').classList.remove('hidden');
+                document.getElementById('auto-clicker-badge')?.classList.remove('hidden');
                 const btn = document.getElementById('btn-buy-auto');
                 if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
             }
@@ -714,54 +602,39 @@
 
         function calculateOfflineEarnings(u) {
             if (!u.auto_clicker || !u.last_active) return;
-            
-            const now = Date.now();
-            const secondsOffline = Math.floor((now - u.last_active) / 1000);
-            
-            // Якщо не було більше 2 хвилин
+            const secondsOffline = Math.floor((Date.now() - u.last_active) / 1000);
             if (secondsOffline > 120) { 
-                const earned = secondsOffline * 1; // 1 монета за секунду
+                const earned = secondsOffline * 1;
                 state.clicker.coins += earned;
-                
                 document.getElementById('offline-earned').innerText = `+${earned.toLocaleString('ru-RU')} 🪙`;
-                document.getElementById('offline-popup').classList.remove('hidden');
+                document.getElementById('offline-popup')?.classList.remove('hidden');
                 updateClickerUI();
             }
         }
 
         function offlineFarmLoop() {
-            if (state.user && state.autoClicker) {
-                state.clicker.coins += 1;
-                updateClickerUI();
-            }
+            if (state.user && state.autoClicker) { state.clicker.coins += 1; updateClickerUI(); }
         }
 
         async function syncGameDataWithCloud() {
             if (!state.user) return;
-            
-            // Оновлюємо last_active завжди
             const updates = { last_active: Date.now() };
             let hasChanges = false;
 
             if (state.clicker.coins !== state.clicker.lastSyncCoins || state.clicker.energy !== state.clicker.lastSyncEnergy) {
-                updates.coins = state.clicker.coins;
-                updates.energy = state.clicker.energy;
-                hasChanges = true;
+                updates.coins = state.clicker.coins; updates.energy = state.clicker.energy; hasChanges = true;
             }
 
             const statusEl = document.getElementById('sync-status');
-            if(hasChanges) {
-                statusEl.innerText = "⏳ Сохр...";
-                statusEl.classList.replace('text-gray-400', 'text-yellow-500');
+            if(hasChanges && statusEl) {
+                statusEl.innerText = "⏳ Сохр..."; statusEl.classList.replace('text-gray-400', 'text-yellow-500');
             }
 
             try {
                 await supabaseClient.from('users').update(updates).eq('id', state.user.id);
-                if(hasChanges) {
-                    state.clicker.lastSyncCoins = state.clicker.coins;
-                    state.clicker.lastSyncEnergy = state.clicker.energy;
-                    statusEl.innerText = "☁️ Ок";
-                    statusEl.classList.replace('text-yellow-500', 'text-green-500');
+                if(hasChanges && statusEl) {
+                    state.clicker.lastSyncCoins = state.clicker.coins; state.clicker.lastSyncEnergy = state.clicker.energy;
+                    statusEl.innerText = "☁️ Ок"; statusEl.classList.replace('text-yellow-500', 'text-green-500');
                     setTimeout(() => { statusEl.innerText = "☁️ Синхронизировано"; statusEl.classList.replace('text-green-500', 'text-gray-400'); }, 2000);
                 }
             } catch(e) {}
@@ -769,8 +642,8 @@
 
         function updateProfileUI() {
             if (state.user) {
-                document.getElementById('auth-form-container').classList.add('hidden');
-                document.getElementById('user-dashboard').classList.remove('hidden');
+                document.getElementById('auth-form-container')?.classList.add('hidden');
+                document.getElementById('user-dashboard')?.classList.remove('hidden');
                 
                 document.getElementById('profile-name').innerText = state.user.name;
                 document.getElementById('profile-email').innerText = state.user.email;
@@ -778,29 +651,29 @@
                 
                 const imgEl = document.getElementById('profile-avatar-img');
                 const iconEl = document.getElementById('profile-avatar-icon');
-                if(state.user.avatar_url) {
+                if(state.user.avatar_url && imgEl && iconEl) {
                     imgEl.src = state.user.avatar_url; imgEl.classList.remove('hidden'); iconEl.classList.add('hidden');
-                } else {
+                } else if (imgEl && iconEl) {
                     imgEl.classList.add('hidden'); iconEl.classList.remove('hidden');
                 }
 
                 const roleSpan = document.getElementById('profile-role');
-                if (state.user.is_admin) {
+                if (state.user.is_admin && roleSpan) {
                     roleSpan.innerText = "👑 Мэр Муу-рманска (Админ)";
                     roleSpan.className = "inline-block mt-3 bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider shadow-sm";
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                } else {
+                    document.getElementById('admin-panel')?.classList.remove('hidden');
+                } else if (roleSpan) {
                     roleSpan.innerText = "Рядовая Корова";
                     roleSpan.className = "inline-block mt-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider shadow-sm";
-                    document.getElementById('admin-panel').classList.add('hidden');
+                    document.getElementById('admin-panel')?.classList.add('hidden');
                 }
 
                 document.getElementById('edit-name').value = state.user.name || '';
                 document.getElementById('edit-avatar').value = state.user.avatar_url || '';
                 document.getElementById('edit-bio').value = state.user.bio || '';
             } else {
-                document.getElementById('auth-form-container').classList.remove('hidden');
-                document.getElementById('user-dashboard').classList.add('hidden');
+                document.getElementById('auth-form-container')?.classList.remove('hidden');
+                document.getElementById('user-dashboard')?.classList.add('hidden');
             }
         }
 
@@ -811,189 +684,158 @@
             const newBio = document.getElementById('edit-bio').value.trim();
 
             try {
-                const { error } = await supabaseClient.from('users').update({
-                    name: newName, avatar_url: newAvatar, bio: newBio
-                }).eq('id', state.user.id);
-
+                const { error } = await supabaseClient.from('users').update({ name: newName, avatar_url: newAvatar, bio: newBio }).eq('id', state.user.id);
                 if(error) throw error;
                 
                 state.user.name = newName; state.user.avatar_url = newAvatar; state.user.bio = newBio;
-                updateProfileUI();
-                showToast("Профиль успешно обновлен!", "success");
-            } catch (e) {
-                showToast("Ошибка. Создайте колонки avatar_url и bio (text) в Supabase.", "error");
-            }
+                updateProfileUI(); showToast("Профиль сохранен!", "success");
+            } catch (e) { showToast("Ошибка. Созданы ли колонки avatar_url, bio?", "error"); }
         }
 
         function logout() {
             state.user = null;
             localStorage.removeItem('murmansk_user_email');
             localStorage.removeItem('murmansk_user_pass');
-            window.location.reload(); // Найпростіший спосіб очистити весь стейт
+            // Safe resets for UI
+            document.getElementById('auth-warning-clicker')?.classList.remove('hidden');
+            document.getElementById('click-multiplier-badge')?.classList.add('hidden');
+            document.getElementById('auto-clicker-badge')?.classList.add('hidden');
+            window.location.reload();
         }
 
         function updateEarnUI() {
             if(!state.user) return;
             const link = window.location.origin + window.location.pathname + '?ref=' + state.user.id;
-            document.getElementById('ref-link').value = link;
-            document.getElementById('ref-count').innerText = state.user.ref_count || 0;
+            const refEl = document.getElementById('ref-link');
+            if(refEl) refEl.value = link;
+            const refCountEl = document.getElementById('ref-count');
+            if(refCountEl) refCountEl.innerText = state.user.ref_count || 0;
             
             if(state.completedTasks.includes('tg')) {
                 const btn = document.getElementById('btn-task-tg');
-                btn.innerText = "Выполнено"; btn.disabled = true; btn.className = "bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm";
+                if(btn) { btn.innerText = "Выполнено"; btn.disabled = true; btn.className = "bg-green-500 text-white font-bold py-2 px-4 rounded-lg text-sm"; }
             }
         }
 
         function copyRefLink() {
             const el = document.getElementById('ref-link');
-            el.select(); document.execCommand('copy');
-            showToast("Ссылка скопирована! Отправь её друзьям.", "success");
+            if(el) { el.select(); document.execCommand('copy'); showToast("Ссылка скопирована!", "success"); }
         }
 
         function startTask(taskId, reward, url) {
             if(!state.user) return switchView('profile');
             if(state.completedTasks.includes(taskId)) return;
-
             window.open(url, '_blank');
             const btn = document.getElementById('btn-task-' + taskId);
-            btn.innerText = "Проверка...";
+            if(btn) btn.innerText = "Проверка...";
             
             setTimeout(async () => {
                 state.clicker.coins += reward;
                 state.completedTasks.push(taskId);
-                
                 try {
-                    await supabaseClient.from('users').update({
-                        coins: state.clicker.coins,
-                        completed_tasks: state.completedTasks.join(',')
-                    }).eq('id', state.user.id);
-                    
-                    updateClickerUI();
-                    updateEarnUI();
-                    showToast(`Получено ${reward.toLocaleString('ru-RU')} 🪙 за выполнение задания!`, "success");
-                } catch(e) { console.warn(e); }
+                    await supabaseClient.from('users').update({ coins: state.clicker.coins, completed_tasks: state.completedTasks.join(',') }).eq('id', state.user.id);
+                    updateClickerUI(); updateEarnUI(); showToast(`+${reward.toLocaleString('ru-RU')} 🪙`, "success");
+                } catch(e) {}
             }, 5000); 
         }
 
         function activatePromo() {
             if(!state.user) return switchView('profile');
-            const code = document.getElementById('promo-input').value.trim().toUpperCase();
+            const input = document.getElementById('promo-input');
+            const code = input?.value.trim().toUpperCase();
             if(!code) return;
             
-            // Проста логіка промокодів (Можна винести в БД)
             if(code === 'МУУ2026') {
-                if(state.completedTasks.includes('promo_muu2026')) return showToast("Промокод уже использован!", "error");
-                state.clicker.coins += 5000;
-                state.completedTasks.push('promo_muu2026');
-                showToast("Промокод активирован! +5,000 🪙", "success");
-                
-                supabaseClient.from('users').update({
-                    coins: state.clicker.coins,
-                    completed_tasks: state.completedTasks.join(',')
-                }).eq('id', state.user.id);
-                
-                updateClickerUI();
-                document.getElementById('promo-input').value = '';
-            } else {
-                showToast("Неверный промокод!", "error");
-            }
+                if(state.completedTasks.includes('promo_muu2026')) return showToast("Код использован!", "error");
+                state.clicker.coins += 5000; state.completedTasks.push('promo_muu2026');
+                showToast("Код принят! +5,000 🪙", "success");
+                supabaseClient.from('users').update({ coins: state.clicker.coins, completed_tasks: state.completedTasks.join(',') }).eq('id', state.user.id);
+                updateClickerUI(); input.value = '';
+            } else { showToast("Неверный код!", "error"); }
         }
 
         function clickCoin(e) {
             if (state.clicker.energy > 0) {
                 const earned = 1 * state.multiplier;
-                state.clicker.coins += earned;
-                state.clicker.energy--;
+                state.clicker.coins += earned; state.clicker.energy--;
                 updateClickerUI();
 
                 const rect = e.target.getBoundingClientRect();
-                const x = e.clientX || rect.left + rect.width / 2;
-                const y = e.clientY || rect.top + rect.height / 2;
+                const x = e.clientX || rect.left + rect.width / 2; const y = e.clientY || rect.top + rect.height / 2;
                 createFloatingText(x, y, `+${earned}`);
                 
-                // Анімація зменшення
                 const btn = document.getElementById('main-coin-btn');
-                btn.style.transform = 'scale(0.95)';
-                setTimeout(() => btn.style.transform = 'scale(1)', 100);
-
+                if(btn) { btn.style.transform = 'scale(0.95)'; setTimeout(() => btn.style.transform = 'scale(1)', 100); }
                 if (navigator.vibrate) navigator.vibrate(50);
-            } else {
-                createFloatingText(e.clientX, e.clientY, "Устал!");
-            }
+            } else { createFloatingText(e.clientX, e.clientY, "Устал!"); }
         }
 
         function updateClickerUI() {
             const formattedCoins = state.clicker.coins.toLocaleString('ru-RU');
-            document.getElementById('coin-balance').innerText = formattedCoins;
-            document.getElementById('energy-text').innerText = `${state.clicker.energy} / ${state.clicker.maxEnergy}`;
-            document.getElementById('energy-bar').style.width = (state.clicker.energy / state.clicker.maxEnergy) * 100 + '%';
+            const balanceEl = document.getElementById('coin-balance');
+            if(balanceEl) balanceEl.innerText = formattedCoins;
+            const energyTextEl = document.getElementById('energy-text');
+            if(energyTextEl) energyTextEl.innerText = `${state.clicker.energy} / ${state.clicker.maxEnergy}`;
+            const energyBarEl = document.getElementById('energy-bar');
+            if(energyBarEl) energyBarEl.style.width = (state.clicker.energy / state.clicker.maxEnergy) * 100 + '%';
             
-            if(!document.getElementById('view-shop').classList.contains('hidden-view')) {
-                 document.getElementById('shop-balance').innerText = formattedCoins;
+            if(!document.getElementById('view-shop')?.classList.contains('hidden-view')) {
+                 const shopBalance = document.getElementById('shop-balance');
+                 if(shopBalance) shopBalance.innerText = formattedCoins;
             }
         }
 
         function regenerateEnergy() {
             if (state.clicker.energy < state.clicker.maxEnergy) {
                 state.clicker.energy = Math.min(state.clicker.energy + 2, state.clicker.maxEnergy);
-                if(!document.getElementById('view-clicker').classList.contains('hidden-view')) updateClickerUI();
+                if(!document.getElementById('view-clicker')?.classList.contains('hidden-view')) updateClickerUI();
             }
         }
 
         async function buyItem(type, price, skinId = null) {
-            if(!state.user) { showToast("Сначала войдите в аккаунт!", "error"); switchView('profile'); return; }
-            if(state.clicker.coins < price) { showToast("Не хватает Муу-коинов!", "error"); return; }
+            if(!state.user) { showToast("Войдите в аккаунт!", "error"); switchView('profile'); return; }
+            if(state.clicker.coins < price) { showToast("Мало монет!", "error"); return; }
 
             try {
                 if(type === 'energy') {
                     state.clicker.coins -= price; state.clicker.energy = state.clicker.maxEnergy;
-                    showToast("Энергия восстановлена!", "success");
+                    showToast("Энергия полная!", "success");
                 } 
                 else if (type === 'double') {
-                    if(state.multiplier >= 2) return showToast("Буст уже куплен!", "error");
+                    if(state.multiplier >= 2) return showToast("Уже куплено!", "error");
                     await supabaseClient.from('users').update({click_multiplier: 2}).eq('id', state.user.id);
                     state.clicker.coins -= price; state.multiplier = 2;
-                    document.getElementById('click-multiplier-badge').classList.remove('hidden');
-                    const btn = document.getElementById('btn-buy-double'); btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50');
+                    document.getElementById('click-multiplier-badge')?.classList.remove('hidden');
+                    const btn = document.getElementById('btn-buy-double'); if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
                     showToast("Дабл-клик активирован!", "success");
                 }
                 else if (type === 'auto') {
-                    if(state.autoClicker) return showToast("Буст уже куплен!", "error");
+                    if(state.autoClicker) return showToast("Уже куплено!", "error");
                     await supabaseClient.from('users').update({auto_clicker: true}).eq('id', state.user.id);
                     state.clicker.coins -= price; state.autoClicker = true;
-                    document.getElementById('auto-clicker-badge').classList.remove('hidden');
-                    const btn = document.getElementById('btn-buy-auto'); btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50');
+                    document.getElementById('auto-clicker-badge')?.classList.remove('hidden');
+                    const btn = document.getElementById('btn-buy-auto'); if(btn) { btn.innerText = "КУПЛЕНО"; btn.disabled = true; btn.classList.add('opacity-50'); }
                     showToast("Автодоярка включена!", "success");
                 }
                 else if (type === 'skin') {
                     if(state.purchasedSkins.includes(skinId)) {
-                        // Екіпірувати
                         await supabaseClient.from('users').update({equipped_skin: skinId}).eq('id', state.user.id);
-                        state.equippedSkin = skinId;
-                        applySkin(skinId);
-                        renderShopSkins();
-                        showToast("Скин надет!", "success");
-                        return; // Не віднімаємо гроші
+                        state.equippedSkin = skinId; applySkin(skinId); renderShopSkins();
+                        showToast("Скин надет!", "success"); return; 
                     } else {
-                        // Купити
                         const newPurchased = [...state.purchasedSkins, skinId].join(',');
                         await supabaseClient.from('users').update({purchased_skins: newPurchased, equipped_skin: skinId}).eq('id', state.user.id);
-                        state.clicker.coins -= price;
-                        state.purchasedSkins.push(skinId);
-                        state.equippedSkin = skinId;
-                        applySkin(skinId);
-                        renderShopSkins();
-                        showToast("Скин куплен и надет!", "success");
+                        state.clicker.coins -= price; state.purchasedSkins.push(skinId); state.equippedSkin = skinId;
+                        applySkin(skinId); renderShopSkins(); showToast("Куплено и надето!", "success");
                     }
                 }
                 updateClickerUI();
-            } catch(e) {
-                showToast("Ошибка. Убедитесь, что в БД есть колонки click_multiplier, auto_clicker, purchased_skins, equipped_skin.", "error");
-            }
+            } catch(e) { showToast("Ошибка покупки в БД.", "error"); }
         }
 
         function renderShopSkins() {
             const container = document.getElementById('skins-container');
+            if(!container) return;
             container.innerHTML = '';
             
             Object.entries(SKINS_DB).forEach(([id, data]) => {
@@ -1001,12 +843,8 @@
                 const isEquipped = state.user && state.equippedSkin === id;
                 
                 let btnHtml = `<button onclick="buyItem('skin', ${data.price}, '${id}')" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-2 rounded-xl mt-2">${data.price.toLocaleString('ru-RU')} 🪙</button>`;
-                
-                if (isEquipped) {
-                    btnHtml = `<button class="w-full bg-green-500 text-white font-black py-2 rounded-xl mt-2 cursor-default">НАДЕТ</button>`;
-                } else if (isPurchased) {
-                    btnHtml = `<button onclick="buyItem('skin', 0, '${id}')" class="w-full bg-gray-200 text-gray-700 hover:bg-gray-300 font-black py-2 rounded-xl mt-2">НАДЕТЬ</button>`;
-                }
+                if (isEquipped) { btnHtml = `<button class="w-full bg-green-500 text-white font-black py-2 rounded-xl mt-2 cursor-default">НАДЕТ</button>`; } 
+                else if (isPurchased) { btnHtml = `<button onclick="buyItem('skin', 0, '${id}')" class="w-full bg-gray-200 text-gray-700 hover:bg-gray-300 font-black py-2 rounded-xl mt-2">НАДЕТЬ</button>`; }
 
                 container.innerHTML += `
                     <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 border-2 ${isEquipped ? 'border-green-500' : 'border-gray-100 dark:border-gray-700'} text-center transition flex flex-col justify-between h-full">
@@ -1023,64 +861,55 @@
         function applySkin(skinId) {
             const data = SKINS_DB[skinId] || SKINS_DB['default'];
             const content = document.getElementById('coin-content');
-            content.innerHTML = `<i class="${data.icon} ${data.color}"></i>`;
-        }
-
-        function getBonus() {
-            if(state.bonusCooldown) return;
-            state.clicker.coins += 50; updateClickerUI();
-            state.bonusCooldown = true;
-            document.getElementById('btn-bonus').classList.add('opacity-50');
-            setTimeout(() => { state.bonusCooldown = false; document.getElementById('btn-bonus').classList.remove('opacity-50'); }, 60000);
+            if(content) content.innerHTML = `<i class="${data.icon} ${data.color}"></i>`;
         }
 
         function setChatMode(mode) {
             state.chatMode = mode;
-            document.getElementById('tab-chat-global').className = mode === 'global' ? "w-full text-left px-4 py-3 rounded-xl font-bold bg-sky-100 text-murmansk transition" : "w-full text-left px-4 py-3 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition";
-            document.getElementById('tab-chat-support').className = mode === 'support' ? "w-full text-left px-4 py-3 rounded-xl font-bold bg-red-100 text-red-600 transition" : "w-full text-left px-4 py-3 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition";
+            const tg = document.getElementById('tab-chat-global');
+            const ts = document.getElementById('tab-chat-support');
+            if(tg) tg.className = mode === 'global' ? "w-full text-left px-4 py-3 rounded-xl font-bold bg-sky-100 text-murmansk transition" : "w-full text-left px-4 py-3 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition";
+            if(ts) ts.className = mode === 'support' ? "w-full text-left px-4 py-3 rounded-xl font-bold bg-red-100 text-red-600 transition" : "w-full text-left px-4 py-3 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition";
             
-            document.getElementById('chat-header-title').innerHTML = mode === 'global' ? '🌍 Общий чат стада' : '🆘 Поддержка (Связь с Мэром)';
+            const ht = document.getElementById('chat-header-title');
+            if(ht) ht.innerHTML = mode === 'global' ? '🌍 Общий чат стада' : '🆘 Поддержка (Связь с Мэром)';
             loadChatMessages();
         }
 
         function promptPhotoUrl() {
             const url = prompt("Вставьте прямую ссылку на фото (.jpg/.png):");
             if (url) {
-                document.getElementById('chat-photo-url').value = url;
+                const pu = document.getElementById('chat-photo-url');
+                if(pu) pu.value = url;
                 const preview = document.getElementById('chat-photo-preview');
-                preview.querySelector('img').src = url;
-                preview.classList.remove('hidden');
+                if(preview) { preview.querySelector('img').src = url; preview.classList.remove('hidden'); }
             }
         }
         function cancelPhoto() {
-            document.getElementById('chat-photo-url').value = '';
-            document.getElementById('chat-photo-preview').classList.add('hidden');
+            const pu = document.getElementById('chat-photo-url'); if(pu) pu.value = '';
+            document.getElementById('chat-photo-preview')?.classList.add('hidden');
         }
 
         async function loadChatMessages() {
             const container = document.getElementById('chat-messages');
-            if(!state.user) { container.innerHTML = '<div class="text-center text-red-500 mt-10 font-bold">Войдите в аккаунт, чтобы писать в чат.</div>'; return; }
+            if(!container) return;
+            if(!state.user) { container.innerHTML = '<div class="text-center text-red-500 mt-10 font-bold">Войдите, чтобы писать в чат.</div>'; return; }
 
             try {
                 let query = supabaseClient.from('messages').select('*').order('created_at', { ascending: true }).limit(50);
-                
-                if (state.chatMode === 'global') {
-                    query = query.eq('is_support', false).is('recipient_email', null);
-                } else {
+                if (state.chatMode === 'global') { query = query.eq('is_support', false).is('recipient_email', null); } 
+                else {
                     query = query.eq('is_support', true);
-                    if(!state.user.is_admin) {
-                        query = query.eq('user_email', state.user.email); // Звичайний юзер бачить тільки свої скарги
-                    }
+                    if(!state.user.is_admin) query = query.eq('user_email', state.user.email); 
                 }
 
                 const { data, error } = await query;
                 if(error) throw error;
 
-                // Перевірка чи потрібно скролити вниз (якщо були внизу)
                 const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 1;
-
                 container.innerHTML = '';
-                if(data.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 mt-10 text-sm font-bold">Здесь пока тихо... Напиши первым!</div>'; return; }
+                
+                if(data.length === 0) { container.innerHTML = '<div class="text-center text-gray-400 mt-10 text-sm font-bold">Здесь тихо...</div>'; return; }
 
                 data.forEach(msg => {
                     const isMe = msg.user_email === state.user.email;
@@ -1089,13 +918,10 @@
                     if(msg.sender_name.includes('👑') || msg.is_admin) div.classList.add('border', 'border-yellow-400');
                     
                     let imgHtml = msg.img_url ? `<img src="${escapeHtml(msg.img_url)}" class="w-full max-w-[200px] rounded-lg mt-1 cursor-pointer hover:opacity-90" onclick="window.open('${escapeHtml(msg.img_url)}')">` : '';
-                    
-                    // Кнопка відповіді для адміна
                     let replyBtn = '';
                     if (state.chatMode === 'support' && state.user.is_admin && !isMe) {
                          replyBtn = `<button onclick="replyToSupport('${escapeHtml(msg.user_email)}', '${escapeHtml(msg.sender_name)}')" class="text-xs bg-red-100 text-red-700 px-2 rounded ml-2 hidden group-hover:inline-block">Ответить</button>`;
                     }
-                    
                     let recipientInfo = msg.recipient_email ? `<span class="text-xs opacity-60"> 👉 ${escapeHtml(msg.recipient_email)}</span>` : '';
 
                     div.innerHTML = `
@@ -1109,62 +935,48 @@
                 });
                 
                 if (isScrolledToBottom) container.scrollTop = container.scrollHeight;
-                
-            } catch(e) { container.innerHTML = `<div class="text-center text-red-500 mt-10 font-bold text-sm">Ошибка. Создайте таблицу messages. (RLS должен быть отключен)</div>`; }
+            } catch(e) { container.innerHTML = `<div class="text-center text-red-500 mt-10 font-bold text-sm">Ошибка. Создайте таблицу messages. (RLS выключен?)</div>`; }
         }
 
         async function sendChatMessage(e) {
             e.preventDefault();
-            if(!state.user) return showToast("Сначала войдите в аккаунт!", "error");
+            if(!state.user) return showToast("Войдите в аккаунт!", "error");
             
             const input = document.getElementById('chat-input');
             const photoInput = document.getElementById('chat-photo-url');
-            const text = input.value.trim();
-            const imgUrl = photoInput.value.trim();
-            
+            const text = input.value.trim(); const imgUrl = photoInput.value.trim();
             if(!text && !imgUrl) return;
 
             input.disabled = true;
             try {
-                // Якщо це відповідь адміна в підтримці
                 let recipient = null;
                 if (state.chatMode === 'support' && state.user.is_admin && window.currentSupportReplyEmail) {
-                    recipient = window.currentSupportReplyEmail;
-                    window.currentSupportReplyEmail = null; // Зкидаємо після відправки
+                    recipient = window.currentSupportReplyEmail; window.currentSupportReplyEmail = null;
                 }
 
                 const msgObj = {
                     user_email: state.user.email,
                     sender_name: state.user.is_admin ? "👑 " + state.user.name : state.user.name,
-                    content: text,
-                    is_support: state.chatMode === 'support',
-                    is_admin: state.user.is_admin,
-                    img_url: imgUrl || null,
-                    recipient_email: recipient
+                    content: text, is_support: state.chatMode === 'support',
+                    is_admin: state.user.is_admin, img_url: imgUrl || null, recipient_email: recipient
                 };
 
                 const {error} = await supabaseClient.from('messages').insert([msgObj]);
                 if(error) throw error;
                 
-                input.value = '';
-                cancelPhoto();
-                loadChatMessages();
+                input.value = ''; cancelPhoto(); loadChatMessages();
                 setTimeout(()=> {
                     const c = document.getElementById('chat-messages');
-                    c.scrollTop = c.scrollHeight;
+                    if(c) c.scrollTop = c.scrollHeight;
                 }, 100);
-            } catch(e) {
-                showToast("Ошибка отправки.", "error");
-            } finally {
-                input.disabled = false; input.focus();
-            }
+            } catch(e) { showToast("Ошибка отправки.", "error"); } 
+            finally { input.disabled = false; input.focus(); }
         }
 
         function replyToSupport(userEmail, userName) {
             window.currentSupportReplyEmail = userEmail;
             const input = document.getElementById('chat-input');
-            input.value = `@${userName}, `;
-            input.focus();
+            if(input) { input.value = `@${userName}, `; input.focus(); }
         }
 
         async function fetchNewsFromDB() {
@@ -1176,10 +988,11 @@
 
         function renderNews() {
             const container = document.getElementById('news-container');
+            if(!container) return;
             container.innerHTML = '';
             
             const newsToShow = state.news.length > 0 ? state.news : [
-                { id: 1, title: "Добро пожаловать в Муу-рманск!", text: "Создайте таблицу 'news' в Supabase, чтобы добавлять свои новости. Пока что вы видите тестовую запись.", img: "https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=800&q=80" }
+                { id: 1, title: "Добро пожаловать в Муу-рманск!", text: "Создайте таблицу 'news' в Supabase.", img: "https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=800&q=80" }
             ];
 
             newsToShow.forEach(item => {
@@ -1189,8 +1002,6 @@
                 const card = document.createElement('div');
                 card.className = 'glass-panel rounded-2xl overflow-hidden news-card flex flex-col h-full cursor-pointer';
                 card.onclick = () => openNewsModal(item.title, item.text, imgSrc, dateStr);
-                
-                // Короткий текст для прев'ю
                 const shortText = item.text.length > 80 ? item.text.substring(0, 80) + '...' : item.text;
 
                 card.innerHTML = `
@@ -1201,8 +1012,7 @@
                             <p class="text-gray-600 dark:text-gray-400 font-medium text-sm">${escapeHtml(shortText)}</p>
                         </div>
                         <div class="text-xs text-murmansk font-bold mt-3 flex justify-between items-center">
-                            <span>${dateStr}</span>
-                            <span>Читать <i class="fa-solid fa-arrow-right"></i></span>
+                            <span>${dateStr}</span> <span>Читать <i class="fa-solid fa-arrow-right"></i></span>
                         </div>
                     </div>
                 `;
@@ -1210,30 +1020,25 @@
             });
         }
 
-        // Модалка для новин
         function openNewsModal(title, text, img, date) {
             document.getElementById('modal-news-title').innerText = title;
             document.getElementById('modal-news-text').innerText = text;
             document.getElementById('modal-news-img').src = img;
             document.getElementById('modal-news-date').innerText = date;
-            
-            // Зберігаємо дані для шерингу
             window.currentShareNews = { title, url: window.location.href };
-            
-            document.getElementById('news-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Заборонити скрол фону
+            document.getElementById('news-modal')?.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; 
         }
 
         function closeNewsModal() {
-            document.getElementById('news-modal').classList.add('hidden');
+            document.getElementById('news-modal')?.classList.add('hidden');
             document.body.style.overflow = 'auto';
         }
         
         function shareNews() {
             if(window.currentShareNews) {
                 const text = `📰 ${window.currentShareNews.title}\n\nЧитай полностью тут:\n${window.currentShareNews.url}`;
-                const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(window.currentShareNews.url)}&text=${encodeURIComponent(text)}`;
-                window.open(tgUrl, '_blank');
+                window.open(`https://t.me/share/url?url=${encodeURIComponent(window.currentShareNews.url)}&text=${encodeURIComponent(text)}`, '_blank');
             }
         }
 
@@ -1250,14 +1055,14 @@
                     document.getElementById('admin-news-title').value = '';
                     document.getElementById('admin-news-text').value = '';
                     document.getElementById('admin-news-img').value = '';
-                    await fetchNewsFromDB();
-                    renderNews();
+                    await fetchNewsFromDB(); renderNews();
                 } else throw error;
-            } catch(e) { showToast("Ошибка сохранения. Таблица 'news' создана?", "error"); }
+            } catch(e) { showToast("Ошибка. Таблица 'news' создана?", "error"); }
         }
 
         async function fetchLeaderboard() {
             const container = document.getElementById('leaderboard-container');
+            if(!container) return;
             container.innerHTML = `<div class="text-center py-10 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-3xl"></i></div>`;
             try {
                 const { data } = await supabaseClient.from('users').select('name, coins, is_admin').order('coins', { ascending: false }).limit(20);
@@ -1284,15 +1089,8 @@
             let text = document.getElementById('human-text').value;
             const cowBox = document.getElementById('cow-text');
             if(!text) { cowBox.innerText = "МУУ..."; return; }
-            
-            // Заміна У (враховуючи регістр)
-            text = text.replace(/у/g, 'ууу').replace(/У/g, 'УУУ');
-            // Додавання муу після пунктуації
-            text = text.replace(/([.,!?;]+)/g, '$1 муууу');
-            // Заміна випадкових слів (пасхалка)
-            text = text.replace(/человек/gi, 'двуногий');
-            text = text.replace(/молоко/gi, 'священный нектар');
-            
+            text = text.replace(/у/g, 'ууу').replace(/У/g, 'УУУ').replace(/([.,!?;]+)/g, '$1 муууу');
+            text = text.replace(/человек/gi, 'двуногий').replace(/молоко/gi, 'священный нектар');
             cowBox.innerText = text;
         }
 
@@ -1300,56 +1098,47 @@
             document.body.classList.toggle('dark');
             const isDark = document.body.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            
             const icon = document.getElementById('theme-icon');
-            icon.className = isDark ? "fa-solid fa-sun text-yellow-400 text-lg" : "fa-solid fa-moon text-lg";
-            
-            // Якщо користувач авторизований, зберігаємо тему в БД
-            if(state.user) {
-                supabaseClient.from('users').update({theme: isDark ? 'dark' : 'light'}).eq('id', state.user.id).then();
-            }
+            if(icon) icon.className = isDark ? "fa-solid fa-sun text-yellow-400 text-lg" : "fa-solid fa-moon text-lg";
+            if(state.user) supabaseClient.from('users').update({theme: isDark ? 'dark' : 'light'}).eq('id', state.user.id).then();
         }
 
         function loadLocalTheme() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.body.classList.add('dark');
-                document.getElementById('theme-icon').className = "fa-solid fa-sun text-yellow-400 text-lg";
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.className = "fa-solid fa-sun text-yellow-400 text-lg";
             } else {
-                document.getElementById('theme-icon').className = "fa-solid fa-moon text-lg";
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.className = "fa-solid fa-moon text-lg";
             }
         }
 
         function createSnowflakes() {
             const chars = ['❄', '❅', '❆'];
             setInterval(() => {
-                const el = document.createElement('div');
-                el.className = 'snowflake';
+                const el = document.createElement('div'); el.className = 'snowflake';
                 el.innerText = chars[Math.floor(Math.random() * chars.length)];
-                el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDuration = (Math.random() * 3 + 5) + 's';
-                el.style.opacity = Math.random() * 0.5 + 0.2;
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 8000);
+                el.style.left = Math.random() * 100 + 'vw'; el.style.animationDuration = (Math.random() * 3 + 5) + 's'; el.style.opacity = Math.random() * 0.5 + 0.2;
+                document.body.appendChild(el); setTimeout(() => el.remove(), 8000);
             }, 300);
         }
 
-        function escapeHtml(unsafe) {
-            return (unsafe||'').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+        function escapeHtml(unsafe) { return (unsafe||'').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
         
         function switchView(viewId) {
             ['news', 'clicker', 'earn', 'airdrop', 'shop', 'leaderboard', 'chat', 'translator', 'profile'].forEach(id => {
-                document.getElementById('view-' + id).classList.add('hidden-view');
+                document.getElementById('view-' + id)?.classList.add('hidden-view');
                 document.getElementById('btn-' + id)?.classList.remove('active');
             });
-            
-            document.getElementById('view-' + viewId).classList.remove('hidden-view');
+            document.getElementById('view-' + viewId)?.classList.remove('hidden-view');
             document.getElementById('btn-' + viewId)?.classList.add('active');
-
             if (viewId === 'leaderboard') fetchLeaderboard();
             if (viewId === 'chat') loadChatMessages();
-            if (viewId === 'shop' && state.user) document.getElementById('shop-balance').innerText = state.clicker.coins.toLocaleString('ru-RU');
+            if (viewId === 'shop' && state.user) {
+                const b = document.getElementById('shop-balance'); if(b) b.innerText = state.clicker.coins.toLocaleString('ru-RU');
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
