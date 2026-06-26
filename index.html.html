@@ -25,7 +25,9 @@
 
     <style>
         body {
-            background-color: #f0f9ff;
+            background: radial-gradient(circle at top left, rgba(14,165,233,0.12), transparent 28%),
+                        radial-gradient(circle at bottom right, rgba(251,191,36,0.16), transparent 30%),
+                        linear-gradient(135deg, #f8fdff 0%, #eef7ff 55%, #fef9e7 100%);
             color: #1f2937;
             min-height: 100vh;
             display: flex;
@@ -34,31 +36,71 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        body.dark { background-color: #0f172a; color: #e2e8f0; }
+        body.dark { background: radial-gradient(circle at top left, rgba(56,189,248,0.16), transparent 25%),
+                        radial-gradient(circle at bottom right, rgba(245,158,11,0.16), transparent 28%),
+                        linear-gradient(135deg, #020617 0%, #0f172a 45%, #111827 100%); color: #e2e8f0; }
+
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            width: 20rem;
+            height: 20rem;
+            border-radius: 999px;
+            filter: blur(70px);
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatGlow 10s ease-in-out infinite alternate;
+        }
+        body::before { top: -5rem; left: -5rem; background: #38bdf8; }
+        body::after { bottom: -6rem; right: -5rem; background: #fbbf24; animation-duration: 12s; }
+        @keyframes floatGlow { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(20px, 25px, 0) scale(1.08); } }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(14, 165, 233, 0.1);
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 12px 40px rgba(14, 165, 233, 0.12);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         }
         .dark .glass-panel {
-            background: rgba(30, 41, 59, 0.85);
+            background: rgba(15, 23, 42, 0.84);
             border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
         }
+        .glass-panel:hover { transform: translateY(-3px); box-shadow: 0 20px 46px rgba(14, 165, 233, 0.18); }
 
         .coin-btn {
             background: radial-gradient(circle, #fbbf24 0%, #f59e0b 100%);
-            box-shadow: 0 10px 25px rgba(0,0,0, 0.2), inset 0 -5px 15px rgba(0,0,0, 0.2);
-            transition: transform 0.1s; user-select: none; touch-action: manipulation;
+            box-shadow: 0 16px 30px rgba(0,0,0, 0.2), inset 0 -6px 16px rgba(0,0,0, 0.22);
+            transition: transform 0.15s ease, box-shadow 0.2s ease; user-select: none; touch-action: manipulation;
+            animation: pulseGlow 2.8s ease-in-out infinite;
         }
         .coin-btn:active { transform: scale(0.95); }
+        @keyframes pulseGlow { 0%,100% { box-shadow: 0 16px 30px rgba(0,0,0,0.2), inset 0 -6px 16px rgba(0,0,0,0.22); } 50% { box-shadow: 0 18px 34px rgba(249, 115, 22, 0.35), inset 0 -6px 16px rgba(0,0,0,0.22); } }
 
         .hidden-view { display: none !important; }
-        .nav-btn.active { color: #0ea5e9; border-bottom: 3px solid #0ea5e9; }
-        .dark .nav-btn.active { color: #38bdf8; border-bottom: 3px solid #38bdf8; }
+        .nav-btn {
+            position: relative;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+        .nav-btn:hover { transform: translateY(-2px); background: rgba(14, 165, 233, 0.1); color: #0f172a; }
+        .nav-btn.active {
+            color: #ffffff;
+            background: linear-gradient(90deg, #0ea5e9 0%, #2563eb 100%);
+            border-color: transparent;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+        }
+        .dark .nav-btn:hover { color: #e2e8f0; background: rgba(56, 189, 248, 0.14); }
+        .dark .nav-btn.active { box-shadow: 0 10px 24px rgba(14, 165, 233, 0.25); }
+
+        .news-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .news-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 20px 40px rgba(14, 165, 233, 0.16); }
+        .view-transition { animation: viewFadeIn 0.35s ease both; }
+        @keyframes viewFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
         .floating-text {
             position: absolute; color: #fbbf24; font-weight: 900; font-size: 24px;
@@ -127,6 +169,8 @@
                     <button onclick="switchView('earn')" id="btn-earn" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-list-check"></i><span class="hidden md:inline ml-1">Задания</span></button>
                     <button onclick="switchView('airdrop')" id="btn-airdrop" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-parachute-box"></i><span class="hidden md:inline ml-1">Airdrop</span></button>
                     <button onclick="switchView('shop')" id="btn-shop" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-store"></i><span class="hidden md:inline ml-1">Магазин</span></button>
+                    <button onclick="switchView('leaderboard')" id="btn-leaderboard" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-trophy"></i><span class="hidden md:inline ml-1">Топ игроков</span></button>
+                    <button onclick="switchView('translator')" id="btn-translator" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-language"></i><span class="hidden md:inline ml-1">Переводчик</span></button>
                     <button onclick="switchView('chat')" id="btn-chat" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-comments"></i><span class="hidden md:inline ml-1">Чат</span></button>
                     <button onclick="switchView('profile')" id="btn-profile" class="nav-btn text-gray-500 dark:text-gray-400 px-3 py-1 whitespace-nowrap"><i class="fa-solid fa-user"></i><span class="hidden md:inline ml-1">Кабинет</span></button>
                 </div>
@@ -482,7 +526,10 @@
             }
 
             const urlParams = new URLSearchParams(window.location.search);
-            const refId = urlParams.get('ref');
+            const refId = urlParams.get('ref') || urlParams.get('referral') || urlParams.get('inviter');
+            if (refId) {
+                localStorage.setItem('murmansk_referral_code', refId);
+            }
 
             if (tgUser) {
                 showToast("Вход через Telegram...", "info");
@@ -542,8 +589,9 @@
             const email = document.getElementById('auth-email').value.trim().toLowerCase();
             const password = document.getElementById('auth-password').value;
             const name = document.getElementById('auth-name').value.trim();
+            const referralCode = localStorage.getItem('murmansk_referral_code');
             document.getElementById('auth-btn-spinner')?.classList.remove('hidden');
-            await processLogin(email, password, name, null, false);
+            await processLogin(email, password, name, referralCode, false);
             document.getElementById('auth-btn-spinner')?.classList.add('hidden');
         }
 
@@ -558,7 +606,7 @@
                 else if (authMode === 'register' || (isTgLogin && !user)) {
                     if (user && !isTgLogin) throw new Error("Эта почта уже занята!");
                     const isAdmin = email === 'mste747@gmail.com';
-                    let newUserObj = { email, password, name: name || "Корова", coins: 0, energy: 1000, is_admin: isAdmin };
+                    let newUserObj = { email, password, name: name || "Корова", coins: 0, energy: 1000, is_admin: isAdmin, referrer_id: refId || null };
                     if(refId) newUserObj.coins = 50000;
 
                     const { data: createdUser, error: insertError } = await supabaseClient.from('users').insert([newUserObj]).select().single();
@@ -722,7 +770,8 @@
 
         function updateEarnUI() {
             if(!state.user) return;
-            const link = window.location.origin + window.location.pathname + '?ref=' + state.user.id;
+            const baseUrl = window.location.origin + window.location.pathname;
+            const link = `${baseUrl}?ref=${encodeURIComponent(state.user.id)}`;
             const refEl = document.getElementById('ref-link');
             if(refEl) refEl.value = link;
             const refCountEl = document.getElementById('ref-count');
@@ -734,9 +783,21 @@
             }
         }
 
-        function copyRefLink() {
+        async function copyRefLink() {
             const el = document.getElementById('ref-link');
-            if(el) { el.select(); document.execCommand('copy'); showToast("Ссылка скопирована!", "success"); }
+            if(!el) return;
+            const value = el.value.trim();
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(value);
+                } else {
+                    el.select();
+                    document.execCommand('copy');
+                }
+                showToast("Ссылка скопирована!", "success");
+            } catch (e) {
+                showToast("Не удалось скопировать ссылку", "error");
+            }
         }
 
         function startTask(taskId, reward, url) {
@@ -894,12 +955,13 @@
         }
 
         function promptPhotoUrl() {
-            const url = prompt("Вставьте прямую ссылку на фото (.jpg/.png):");
-            if (url) {
+            const url = window.prompt("Вставьте прямую ссылку на фото (.jpg/.png):");
+            if (url && url.trim()) {
                 const pu = document.getElementById('chat-photo-url');
-                if(pu) pu.value = url;
+                if(pu) pu.value = url.trim();
                 const preview = document.getElementById('chat-photo-preview');
-                if(preview) { preview.querySelector('img').src = url; preview.classList.remove('hidden'); }
+                if(preview) { preview.querySelector('img').src = url.trim(); preview.classList.remove('hidden'); }
+                showToast("Фото добавлено для отправки", "success");
             }
         }
         function cancelPhoto() {
@@ -1044,7 +1106,8 @@
             document.getElementById('modal-news-date').innerText = date;
             window.currentShareNews = { title, url: window.location.href };
             document.getElementById('news-modal')?.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('news-modal')?.classList.add('view-transition'), 10);
         }
 
         function closeNewsModal() {
@@ -1149,7 +1212,11 @@
                 document.getElementById('view-' + id)?.classList.add('hidden-view');
                 document.getElementById('btn-' + id)?.classList.remove('active');
             });
-            document.getElementById('view-' + viewId)?.classList.remove('hidden-view');
+            const targetView = document.getElementById('view-' + viewId);
+            if (targetView) {
+                targetView.classList.remove('hidden-view');
+                targetView.classList.add('view-transition');
+            }
             document.getElementById('btn-' + viewId)?.classList.add('active');
             if (viewId === 'leaderboard') fetchLeaderboard();
             if (viewId === 'chat') loadChatMessages();
