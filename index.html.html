@@ -695,6 +695,41 @@
         const supabaseUrl = 'https://xnlmdyarjkurseycixef.supabase.co';
         const supabaseKey = 'sb_publishable_nt6a6bPPGafs0vAsivmkdQ_pi9SC7rO';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseRestUrl = `${supabaseUrl}/rest/v1`;
+        const supabaseRestHeaders = {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+        };
+
+        async function supabaseRestRequest(path, options = {}) {
+            const response = await fetch(`${supabaseRestUrl}${path}`, {
+                ...options,
+                headers: { ...supabaseRestHeaders, ...(options.headers || {}) }
+            });
+            const text = await response.text();
+            let data = null;
+            try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
+            if (!response.ok) {
+                const message = data?.message || data?.error || `Supabase request failed: ${response.status}`;
+                throw new Error(message);
+            }
+            return data;
+        }
+
+        async function findUserByEmail(email) {
+            const rows = await supabaseRestRequest(`/users?email=eq.${encodeURIComponent(email)}&select=*`);
+            return Array.isArray(rows) && rows.length ? rows[0] : null;
+        }
+
+        async function createUserInSupabase(payload) {
+            const rows = await supabaseRestRequest('/users?select=*', {
+                method: 'POST',
+                body: JSON.stringify([payload])
+            });
+            return Array.isArray(rows) ? rows[0] : rows;
+        }
 
         const state = {
             user: null,
@@ -1217,6 +1252,8 @@
             document.getElementById('tab-register').className = mode === 'register' ? "w-1/2 py-2 font-bold text-murmansk border-b-2 border-murmansk" : "w-1/2 py-2 font-bold text-gray-400 border-b-2 border-transparent cursor-pointer";
             document.getElementById('field-name')?.classList.toggle('hidden', mode === 'login');
             document.getElementById('auth-name').required = mode === 'register';
+            const btnText = document.getElementById('auth-btn-text');
+            if (btnText) btnText.textContent = mode === 'register' ? 'Регистрация' : 'Войти';
         }
 
         async function handleAuth(e) {
@@ -1226,27 +1263,46 @@
             const name = document.getElementById('auth-name').value.trim();
             const referralCode = localStorage.getItem('murmansk_referral_code');
             document.getElementById('auth-btn-spinner')?.classList.remove('hidden');
-            await processLogin(email, password, name, referralCode, false);
-            document.getElementById('auth-btn-spinner')?.classList.add('hidden');
+            try {
+                await processLogin(email, password, name, referralCode, false);
+            } finally {
+                document.getElementById('auth-btn-spinner')?.classList.add('hidden');
+            }
         }
 
         async function processLogin(email, password, name, refId, isTgLogin) {
             try {
-                let { data: user, error: searchError } = await supabaseClient.from('users').select('*').eq('email', email).maybeSingle();
+                let user = await findUserByEmail(email);
 
                 if (authMode === 'login' && !isTgLogin) {
                     if (!user) throw new Error("Аккаунт не найден!");
                     if (user.password !== password) throw new Error("Неверный пароль!");
-                } 
-                else if (authMode === 'register' || (isTgLogin && !user)) {
+                } else if (authMode === 'register' || (isTgLogin && !user)) {
                     if (user && !isTgLogin) throw new Error("Эта почта уже занята!");
                     const isAdmin = email === 'mste747@gmail.com';
-                    let newUserObj = { email, password, name: name || "Корова", coins: 0, energy: 1000, is_admin: isAdmin, referrer_id: refId || null };
-                    if(refId) newUserObj.coins = 50000;
+                    const newUserObj = {
+                        email,
+                        password,
+                        name: name || "Корова",
+                        coins: refId ? 50000 : 0,
+                        energy: 1000,
+                        is_admin: isAdmin,
+                        theme: 'light',
+                        auto_clicker: false,
+                        completed_tasks: null,
+                        ref_count: 0,
+                        bio: '',
+                        avatar_url: null,
+                        xp: 0,
+                        level: 1,
+                        total_xp: 0,
+                        daily_streak: 0,
+                        last_daily_reward_at: null,
+                        last_login_at: null,
+                        registered_at: new Date().toISOString()
+                    };
 
-                    const { data: createdUser, error: insertError } = await supabaseClient.from('users').insert([newUserObj]).select().single();
-                    if (insertError) throw new Error(insertError.message);
-                    user = createdUser;
+                    user = await createUserInSupabase(newUserObj);
                     if (refId) rewardReferrer(refId);
                 }
 
@@ -1260,7 +1316,10 @@
                 handleProgressOnLogin(isNewUser);
                 calculateOfflineEarnings(user);
                 showToast("Вход выполнен!", "success");
-            } catch (err) { showToast(err.message, "error"); }
+            } catch (err) {
+                console.error(err);
+                showToast(err.message || 'Не удалось выполнить вход', 'error');
+            }
         }
 
         async function rewardReferrer(refId) {
